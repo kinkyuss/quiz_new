@@ -1,8 +1,42 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
+class Top extends StatefulWidget {
+  Top();
 
-class Top extends StatelessWidget {
-  const Top({Key? key}) : super(key: key);
+  @override
+  _TopState createState() => _TopState();
+}
+
+class _TopState extends State<Top> with SingleTickerProviderStateMixin   {
+  late AnimationController _controller;
+  late Animation<Offset> _animation;
+
+// audioファイルのpathを指定します。
+  @override
+  void initState() {
+
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 25),
+    );
+
+    _controller.repeat();
+    _animation = Tween<Offset>(
+      begin: Offset(1.0, 0.0),
+      end: Offset(-1.0, 0.0),
+    ).animate(_controller);
+
+
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,118 +44,148 @@ class Top extends StatelessWidget {
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceSize = MediaQuery.of(context).textScaleFactor;
 
-    return Scaffold(
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            InkWell(
-              // onTap: ()=>Navigator.pushNamed(context,'/ranking'),
-              onTap:()async{
-                await FirebaseFirestore.instance
-                    .collection('users') // コレクションID
-                    .doc('id_abc') // ドキュメントID
-                    .set({'name': '鈴木', 'age': 40}); // データ
-              },
-              child: Container(
-                width: double.infinity,
-                height: deviceHeight * 0.15,
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: FractionalOffset.topLeft,
-                      end: FractionalOffset.bottomRight,
-                      colors: [
-                        Colors.red.withOpacity(0.5),
-                        const Color.fromRGBO(255, 165, 0, 0.5)
-                      ],
-                      stops: const [
-                        0.0,
-                        1.0,
-                      ],
-                    ),
-                    color: Colors.lightGreenAccent,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(deviceSize * 90),
-                      bottomRight: Radius.circular(deviceSize * 90),
-                    )),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: deviceHeight * 0.025,
-                    ),
-                    Text(
-                      '秋の大会開催中！',
+    return SafeArea(
+        child: Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+            image: DecorationImage(
+          image: AssetImage('assets/images/utyuu 1.png'),
+          fit: BoxFit.cover,
+        )),
+        child: Center(
+          child: Column(children: <Widget>[
+            Stack(children: [
+              Container(
+                height: deviceHeight * 0.075,
+                decoration: const BoxDecoration(
+                    image: DecorationImage(
+                  image: AssetImage('assets/images/01_08 1.png'),
+                  fit: BoxFit.cover,
+                )),
+              ),
+              SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: AnimatedBuilder(
+                    animation: _animation,
+                    builder: (context, child) {
+                      return FractionalTranslation(
+                        translation: _animation.value,
+                        child: child,
+                      );
+                    },
+                    child: Text(
+                      '秋の大会開催中！受け付けは設定から！！プレミアムプラン、今なら半額！',
                       style: TextStyle(
-                          fontSize: deviceSize * 30, fontWeight: FontWeight.bold),
+                          fontSize: deviceSize * 35, color: Colors.white),
                     ),
-                    Text('詳細はここをタップ！',
-                        style: TextStyle(
-                            fontSize: deviceSize * 30,
-                            fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ),
+                  )),
+            ]),
+            SizedBox(
+              height: deviceHeight * 0.1,
             ),
+            Container(
+                height: deviceHeight * 0.25,
+                width: deviceWidth * 0.4,
+                decoration: const BoxDecoration(
+                    image: DecorationImage(
+                  image: AssetImage('assets/images/globe.png'),
+                  fit: BoxFit.cover,
+                ))),
             SizedBox(
-              height: deviceHeight * 0.075,
-            ),
-            SizedBox(
-                height: deviceHeight * 0.35,
-                child: Image.asset('assets/images/PQP-logo.png')),
-            SizedBox(
-              height: deviceHeight * 0.075,
+              height: deviceHeight * 0.08,
             ),
             InkWell(
-              onTap: (){
-                Navigator.pushNamed(context,'/choice');
-              },
-              child: Container(
-                height: deviceHeight * 0.1,
-                width: deviceWidth * 0.6,
-                decoration: BoxDecoration(
-                  color: const Color.fromRGBO(242, 156, 161, 1),
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Center(
-                    child: Text('クイズを始める',
+                onTap: () async {
+
+
+                  Navigator.pushNamed(context, '/course_choice');
+                },
+                child: Container(
+                    height: deviceHeight * 0.125,
+                    width: deviceWidth * 0.8,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey, width: 2),
+                      color: Colors.white.withOpacity(0.4),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'START',
                         style: TextStyle(
-                            color: Colors.white, fontSize: deviceSize * 30))),
-              ),
-            ),
+                          color: Colors.white,
+                          fontStyle: FontStyle.italic,
+                          fontSize: 50,
+                        ),
+                      ),
+                    ))),
             SizedBox(
               height: deviceHeight * 0.04,
             ),
             InkWell(
-              onTap: ()=>Navigator.pushNamed(context, '/premium'),
-              child: Container(
-                height: deviceHeight * 0.1,
-                width: deviceWidth * 0.6,
-                decoration: BoxDecoration(
-                  color: const Color.fromRGBO(133, 46, 25, 0.8),
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Center(
-                    child: Text('プレミアム機能',
+                onTap: () => Navigator.pushNamed(context, '/premium'),
+                child: Container(
+                    height: deviceHeight * 0.125,
+                    width: deviceWidth * 0.8,
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 2, color: Colors.orangeAccent),
+                      color: Colors.white.withOpacity(0.4),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'PREMIUM',
                         style: TextStyle(
-                            color: Colors.white, fontSize: deviceSize * 30))),
-              ),
-            ),
+                          fontStyle: FontStyle.italic,
+                          color: Colors.white,
+                          fontSize: 50,
+                        ),
+                      ),
+                    ))),
             SizedBox(
               height: deviceHeight * 0.02,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(Icons.settings,color: Colors.grey,size: deviceSize*35,),
-                Text('設定',style: TextStyle(color:Colors.grey,fontSize: deviceSize*30),)
+            SizedBox(
+              width: deviceWidth * 0.8,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Container(
+                      height: 80,
+                      width: 80,
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 2, color: Colors.grey),
+                        color: Colors.white.withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                  child:Icon(Icons.local_post_office,size: deviceSize*40,color:Colors.white)
+                  ),
+                  Container(
+                      height: 80,
+                      width: 80,
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 2, color: Colors.grey),
+                        color: Colors.white.withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                  child:Icon(Icons.edit,color:Colors.white,size:deviceSize*40)),
+                  Container(
+                      height: 80,
+                      width: 80,
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 2, color: Colors.grey),
+                        color: Colors.white.withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(30),
 
-              ],
-            )
+                      ),
+                      child:Icon(Icons.settings,size: deviceSize*40,color:Colors.white)
 
-
-          ],
+                  ),
+                ],
+              ),
+            ),
+          ]),
         ),
       ),
-    );
+    ));
   }
 }

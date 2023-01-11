@@ -1,7 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Choice extends StatelessWidget {
-  const Choice({Key? key}) : super(key: key);
+   Choice({Key? key}) : super(key: key);
+
+  final userUid = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +93,19 @@ class Choice extends StatelessWidget {
               ],
             ),
             InkWell(
-              onTap: ()=>Navigator.pushNamed(context,'/wait'),
+              onTap: () async {
+                print('s');
+                final now = DateTime.now();
+                int unixtime = now.millisecondsSinceEpoch;
+                await  FirebaseFirestore.instance
+                    .collection('waitingUsers')
+                    .doc(userUid)
+                    .set({'status':'waiting','updateAt':unixtime});
+
+
+
+                Navigator.pushNamed(context, '/wait');
+              },
               child: Container(
                 margin: EdgeInsets.only(
                     bottom: deviceHeight * 0.015, top: deviceHeight * 0.0275),

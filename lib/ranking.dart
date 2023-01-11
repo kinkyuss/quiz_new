@@ -118,7 +118,7 @@ class Ranking extends StatelessWidget {
                                       image: DecorationImage(
                                           fit: BoxFit.fill,
                                           image: AssetImage(
-                                              'assets/images/test_icon.jpg'))),
+                                              'AssetImagemages/test_icon.jpg'))),
                                 ),
                                 Text(
                                   'しみしょー',
