@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:quiz_new/quiz/quiz_pop_up.dart';
+import 'package:quiz_new/quiz/wait_test.dart';
+
+import 'much.dart';
 
 class Wait extends StatefulWidget {
   Wait({Key? key}) : super(key: key);
@@ -12,6 +14,7 @@ class Wait extends StatefulWidget {
 
 class _WaitState extends State<Wait> {
   final userUid = FirebaseAuth.instance.currentUser!.uid;
+  String status = '対戦相手を探しています...';
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +32,10 @@ class _WaitState extends State<Wait> {
               if (snapshot.hasError) {
                 return Text("Something went wrongです");
               } else {
-                print('対戦相手が見つかりました');
                 try {
                   snapshot.data!['roomID'];
                 } catch (e) {
-                  return Text('対戦相手を探しています...');
+                  return WaitTest(value: status);
                 }
                 String roomID = snapshot.data!['roomID'];
                 FirebaseFirestore.instance
@@ -57,7 +59,7 @@ class _WaitState extends State<Wait> {
                       try {
                         snapshot.data![matchedID];
                       } catch (e) {
-                        return Text('roomsの二人が書き込まれていません。');
+                        status = '対戦相手が見つかりました。';
                       }
 
                       if (snapshot.hasError) {
@@ -66,8 +68,7 @@ class _WaitState extends State<Wait> {
 
                       // if (snapshot.connectionState == ConnectionState.waiting)
                       else {
-
-                        return QuizPopUp();
+                        return Much(roomID);
                       }
                     });
                 return Text('baka');
