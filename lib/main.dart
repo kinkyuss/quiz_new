@@ -2,24 +2,23 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:quiz_new/course_choice.dart';
-import 'package:quiz_new/premium/detail.dart';
-import 'package:quiz_new/premium/premium.dart';
-import 'package:quiz_new/premium/review.dart';
-import 'package:quiz_new/quiz/chat_room.dart';
-import 'package:quiz_new/quiz/much.dart';
-import 'package:quiz_new/quiz/quiz_answer.dart';
-import 'package:quiz_new/quiz/quiz_pop_up.dart';
-import 'package:quiz_new/quiz/quiz_pop_up1.dart';
-import 'package:quiz_new/quiz/vi_or_de.dart';
-import 'package:quiz_new/quiz/wait.dart';
-import 'package:quiz_new/quiz/wait_test.dart';
-import 'package:quiz_new/ranking.dart';
-import 'package:quiz_new/settings.dart';
-import 'package:quiz_new/top.dart';
-
+import 'package:quiz_new/view/course_choice.dart';
+import 'package:quiz_new/view/premium/detail.dart';
+import 'package:quiz_new/view/premium/premium.dart';
+import 'package:quiz_new/view/premium/review.dart';
+import 'package:quiz_new/view/quiz/chat_room.dart';
+import 'package:quiz_new/view/quiz/choice.dart';
+import 'package:quiz_new/view/quiz/much.dart';
+import 'package:quiz_new/view/quiz/quiz_answer.dart';
+import 'package:quiz_new/view/quiz/quiz_pop_up1.dart';
+import 'package:quiz_new/view/quiz/vi_or_de.dart';
+import 'package:quiz_new/view/quiz/wait_test.dart';
+import 'package:quiz_new/view/ranking.dart';
+import 'package:quiz_new/view/settings.dart';
+import 'package:quiz_new/view/top.dart';
+import 'package:quiz_new/view_model/provider.dart';
+import 'package:quiz_new/view_model/logic/wait_logic.dart';
 import 'firebase_options.dart';
-import 'quiz/choice.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,9 +26,11 @@ Future main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await _initializeFirebaseAuth();
-  runApp(   const ProviderScope(
-    child: MyApp(),
-  ),);
+  runApp(
+    ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 Future<void> _initializeFirebaseAuth() async {
@@ -41,11 +42,23 @@ Future<void> _initializeFirebaseAuth() async {
   }
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MyApp extends ConsumerWidget {
+  MyApp({Key? key}) : super(key: key);
+
+  // final userUid = FirebaseAuth.instance.currentUser!.uid;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   ref
+    //       .read(myInformationProvider.notifier)
+    //       .state =
+    //       ref
+    //           .read(myInformationProvider.state)
+    //           .state
+    //           .copyWith(uid: userUid);
+    // });
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       //
@@ -54,23 +67,21 @@ class MyApp extends StatelessWidget {
           // textTheme: GoogleFonts.notoSansJavaneseTextTheme(),
           ),
       // home:const Top(),
-      initialRoute: '/top',
+      initialRoute: '/much',
       routes: {
         // 画面の名前とWidgetを紐づける
 
-        '/top': (context) => Top(),
+        '/top': (context) =>  const Top(),
         '/ranking': (context) => const Ranking(),
         '/settings': (context) => const Settings(),
-        '/course_choice': (context) => const CourseChoice(),
+        '/course_choice': (context) => CourseChoice(),
         '/choice': (context) => Choice(),
         '/wait': (context) => Wait(),
-        '/wait_test': (context) => WaitTest(
-              key: key,
-              value: '',
+        '/wait_test': (context) => const WaitTest(
+              status: '状態が読み取れません。',
             ),
-        '/much': (context) => Much(key),
+        '/much': (context) => const Much(roomID: '相手の情報を取得できていません。'),
 
-        '/quiz_pop_up': (context) => const QuizPopUp(),
         '/quiz_pop_up1': (context) => QuizPopUp1(),
 
         '/quiz_answer': (context) => const QuizAnswer(),

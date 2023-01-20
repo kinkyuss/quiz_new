@@ -97,14 +97,13 @@ class Choice extends StatelessWidget {
                 print('s');
                 final now = DateTime.now();
                 int unixtime = now.millisecondsSinceEpoch;
-                await  FirebaseFirestore.instance
-                    .collection('waitingUsers')
-                    .doc(userUid)
-                    .set({'status':'waiting','updateAt':unixtime});
+                // await  FirebaseFirestore.instance
+                //     .collection('waitingUsers')
+                //     .doc(userUid)
+                //     .set({'status':'waiting','updateAt':unixtime});
 
 
 
-                Navigator.pushNamed(context, '/wait');
               },
               child: Container(
                 margin: EdgeInsets.only(
