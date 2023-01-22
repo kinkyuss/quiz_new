@@ -4,8 +4,9 @@ class SoundLogic {
   final AudioPlayer _player = AudioPlayer();
   Future<void> audioPlay(file) async {
     await _player.setAsset(file);
-    print('a');
+    print('abc');
     await _player.play();
+
   }
   Future<void> audioStop() async {
     await _player.stop();

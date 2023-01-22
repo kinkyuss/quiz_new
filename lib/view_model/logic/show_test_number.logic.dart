@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import '../../component.dart';
 import '../../model/device_data.dart';
 
-  showTestNumber(BuildContext context,int index)async {
-
-   print('haitta');
+  showTestNumber(BuildContext context,int index,int time)async {
     try {
       final size=DeviceSize(context);
     return  await showDialog(
@@ -24,9 +22,10 @@ import '../../model/device_data.dart';
             ),
           );
         },
-      ).timeout(const Duration(seconds: 1));
+      ).timeout( Duration(seconds: time));
     } on TimeoutException {
       print('a');
       Navigator.pop(context);
+
     }
   }

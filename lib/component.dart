@@ -1,25 +1,93 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:quiz_new/view_model/view_model/quiz_pop_up.dart';
 
 import 'model/device_data.dart';
 import 'view_model/view_model.dart';
 
-class OftenText  {
+class ShowDialog {
+  final Function process;
+  final a;
+  final complete;
+
+  ShowDialog({required this.process, required this.complete,required this.a});
+
+  build(BuildContext context) {
+
+    String b='答え';
+    DeviceSize size = DeviceSize(context);
+    return showDialog(
+      barrierDismissible: true,
+      context: context,
+      builder: (BuildContext context) {
+
+
+        return AlertDialog(
+
+
+          content: SizedBox(
+            height: size.height * 0.14,
+            child: Column(
+              children: [
+                SingleChildScrollView(
+                  child: TextField(
+                    key: GlobalKey(),
+                    // onChanged: (value) {
+                    //   b = value;
+                    // },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: '答えを入力してください。',
+                    ),
+                    autofocus: false,
+                  ),
+                ),
+                Row(
+                  children: [
+                    TextButton(
+                      child: const Text('ki'),
+                      onPressed: () async {
+                Navigator.pop(context);
+                      },),
+
+                      TextButton(
+                      child: const Text('決定'),
+                      onPressed: () async {
+                        print('answer=$b');
+                        await process(a, b);
+
+                      },
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    )
+        .whenComplete(() {
+complete(a,b);
+    });
+  }
+}
+
+class OftenText {
   final String text;
   final double largeFontSize;
   final double mediumFontSize;
   final double smallFontSize;
   final Color color;
 
-  OftenText({
-    required this.text,
-    this.largeFontSize = 70,
-    this.mediumFontSize = 50,
-    this.smallFontSize = 30,
-    this.color =Colors.white
-  });
+  OftenText(
+      {required this.text,
+      this.largeFontSize = 70,
+      this.mediumFontSize = 50,
+      this.smallFontSize = 30,
+      this.color = Colors.white});
 
   Widget large(BuildContext context) {
-    DeviceSize size=DeviceSize(context);
+    DeviceSize size = DeviceSize(context);
     return Text(
       text,
       style: TextStyle(
@@ -31,7 +99,7 @@ class OftenText  {
   }
 
   Widget medium(BuildContext context) {
-    DeviceSize size=DeviceSize(context);
+    DeviceSize size = DeviceSize(context);
     return Text(
       text,
       style: TextStyle(
@@ -43,7 +111,7 @@ class OftenText  {
   }
 
   Widget small(BuildContext context) {
-    DeviceSize size=DeviceSize(context);
+    DeviceSize size = DeviceSize(context);
     return Text(
       text,
       style: TextStyle(
@@ -53,7 +121,6 @@ class OftenText  {
       ),
     );
   }
-
 }
 
 class MainButton extends StatelessWidget {
@@ -93,7 +160,6 @@ class MainButton extends StatelessWidget {
   }
 }
 
-
 class SubButton extends StatelessWidget {
   const SubButton({
     Key? key,
@@ -115,7 +181,7 @@ class SubButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
         ),
         child:
-        Icon(icon, size: size.textScaleFactor * 40, color: Colors.white));
+            Icon(icon, size: size.textScaleFactor * 40, color: Colors.white));
   }
 }
 
@@ -130,12 +196,13 @@ class MainBackGround extends StatelessWidget {
       height: double.infinity,
       decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/utyuu 1.png'),
-            fit: BoxFit.cover,
-          )),
+        image: AssetImage('assets/images/utyuu 1.png'),
+        fit: BoxFit.cover,
+      )),
     );
   }
 }
+
 class QQBackGround extends StatelessWidget {
   const QQBackGround({
     Key? key,
@@ -143,17 +210,15 @@ class QQBackGround extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/早押しクイズ背景.png'),
-            fit: BoxFit.cover,
-          )),
+        image: AssetImage('assets/images/早押しクイズ背景.png'),
+        fit: BoxFit.cover,
+      )),
     );
   }
 }
-
 
 class EnterButton extends StatelessWidget {
   const EnterButton({
@@ -165,7 +230,7 @@ class EnterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   DeviceSize size = DeviceSize(context);
+    DeviceSize size = DeviceSize(context);
 
     return InkWell(
       enableFeedback: false,
@@ -180,12 +245,12 @@ class EnterButton extends StatelessWidget {
           ),
           child: Center(
               child: Text(
-                'GO!',
-                style: TextStyle(
-                    fontStyle: FontStyle.italic,
-                    fontSize: size.textScaleFactor * 40,
-                    color: Colors.white),
-              ))),
+            'GO!',
+            style: TextStyle(
+                fontStyle: FontStyle.italic,
+                fontSize: size.textScaleFactor * 40,
+                color: Colors.white),
+          ))),
     );
   }
 }
@@ -195,7 +260,8 @@ class LoadingAnimation extends StatelessWidget {
     Key? key,
     required AnimationController controller,
     required this.size,
-  }) : _controller = controller, super(key: key);
+  })  : _controller = controller,
+        super(key: key);
 
   final AnimationController _controller;
   final DeviceSize size;
@@ -244,8 +310,7 @@ class UserInformation extends StatelessWidget {
                   decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
-                        image:
-                        AssetImage('assets/images/guest_icon.png'),
+                        image: AssetImage('assets/images/guest_icon.png'),
                         fit: BoxFit.cover,
                       ))),
               Text('あなた',
@@ -285,4 +350,4 @@ class UserInformation extends StatelessWidget {
   }
 }
 
-//211
+

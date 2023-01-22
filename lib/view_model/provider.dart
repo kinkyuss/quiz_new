@@ -10,10 +10,14 @@ import '../model/questios_relation.dart';
 
 final chosenProvider = StateProvider <ChosenData>((ref) => ChosenData());
 final myInformationProvider = StateProvider <MyInformation>((ref) => const MyInformation(name:'松村千里', uid:'Uidが登録されていません。', consecutive: 1));
-final countDownTimerProvider=StateProvider <int>((ref) =>10);
+final countDownTimerProvider=StateProvider <int>((ref) =>100);
+
 final questionsListProvider = StateProvider <QuestionsList>((ref) =>
-    const QuestionsList(test: ['まだ問題は登録されていません。'],
-      answer: ['まだ問題は登録されていません。'],
-      commentary: ['まだ問題は登録されていません。'],));
+    const QuestionsList(test: ['まだ問題は登録されていません。','日本で一番高い山は？,','日本で一番高い山は？,','日本で一番高い山は？,','日本で一番高い山は？,'],
+      answer: ['エベレスト','富士山','富士山','富士山','富士山','富士山','富士山','富士山'],
+      commentary: ['まだ解説は登録されていません。','富士山や','富士山','富士山','富士山'],));
 final questionsProvider = StateProvider<Questions>((ref) {return const Questions(test:'',answer:'',commentary: '', );});
-final first = StateProvider<bool>((ref) {return true;});
+final firstProvider = StateProvider<bool>((ref) {return true;});
+final cdStop= StateProvider<bool>((ref) {return false;});
+final pushEmojiProvider = StateProvider<bool>((ref) {return false;});
+final questionNumberProvider = StateProvider<int>((ref) =>0);

@@ -8,6 +8,7 @@ import 'package:quiz_new/view/premium/premium.dart';
 import 'package:quiz_new/view/premium/review.dart';
 import 'package:quiz_new/view/quiz/chat_room.dart';
 import 'package:quiz_new/view/quiz/choice.dart';
+import 'package:quiz_new/view/quiz/commentary.dart';
 import 'package:quiz_new/view/quiz/much.dart';
 import 'package:quiz_new/view/quiz/quiz_answer.dart';
 import 'package:quiz_new/view/quiz/quiz_pop_up1.dart';
@@ -60,6 +61,7 @@ class MyApp extends ConsumerWidget {
     //           .copyWith(uid: userUid);
     // });
     return MaterialApp(
+      useInheritedMediaQuery: true,
       debugShowCheckedModeBanner: false,
       //
       title: 'Flutter Demo',
@@ -83,6 +85,7 @@ class MyApp extends ConsumerWidget {
         '/much': (context) => const Much(roomID: '相手の情報を取得できていません。'),
 
         '/quiz_pop_up1': (context) => QuizPopUp1(),
+        '/commentary':(context)=>const Commentary(),
 
         '/quiz_answer': (context) => const QuizAnswer(),
         '/chat_room': (context) => const ChatRoom(),
