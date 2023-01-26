@@ -4,29 +4,22 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quiz_new/view_model/provider.dart';
 
 import '../../view/quiz/much.dart';
-import '../../view/quiz/wait_test.dart';
+import '../../view/quiz/wait.dart';
 
-class Wait extends ConsumerWidget {
-  Wait({Key? key}) : super(key: key);
+class WaitLogic extends ConsumerWidget {
+  WaitLogic({Key? key}) : super(key: key);
 
   String status = '対戦相手を探しています...';
 
   @override
   Widget build(BuildContext context, ref) {
     var myInformation = ref.read(myInformationProvider.state).state;
-    print('uid==');
-    print(myInformation.uid);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(seconds: 30), () async {
-        Navigator.pop(context);
-      });
-    });
     return Scaffold(
         body: StreamBuilder<DocumentSnapshot>(
             stream: FirebaseFirestore.instance
-                .collection('waitingUsers')
-                .doc(myInformation.uid)
-                .snapshots(),
+                   .collection('WaitingUsers')
+                   .doc(myInformation.uid)
+                    .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return const Text("サーバーに異常があります。");
@@ -34,7 +27,7 @@ class Wait extends ConsumerWidget {
                 try {
                   snapshot.data!['roomID'];
                 } catch (e) {
-                  return WaitTest(status: status);
+                  return Wait();
                 }
                 String roomID = snapshot.data!['roomID'];
                 FirebaseFirestore.instance
@@ -55,9 +48,11 @@ class Wait extends ConsumerWidget {
                         status = '対戦相手が見つかりました。';
                       }
 
+
                       if (snapshot.hasError) {
                         return const Text("サーバーに異常があります。");
                       } else {
+
 
                         return Much(
                           roomID: roomID,

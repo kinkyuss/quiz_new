@@ -9,7 +9,7 @@ class MyInformation with _$MyInformation {
   const factory MyInformation({
     required String name,
     required String uid,
-    required int consecutive
+    required int consecutive,
   }) = _MyInformation;
 
   factory MyInformation.fromJson(Map<String, dynamic> json) =>

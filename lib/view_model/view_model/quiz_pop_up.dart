@@ -31,7 +31,6 @@ class QuizPopUpViewModel {
 
   late int time = 0;
 
-
   late final List<String> _testList =
       _ref.watch(questionsListProvider.state).state.test;
 
@@ -49,6 +48,7 @@ class QuizPopUpViewModel {
 
   get countDownNumber =>
       '${_ref.watch(countDownTimerProvider.state).state / 10}'.substring(0, 1);
+
   get first => _ref.watch(firstProvider.state).state;
 
   get questionNumber => _ref.watch(questionNumberProvider.state).state;
@@ -62,74 +62,60 @@ class QuizPopUpViewModel {
   firstProcess(
     BuildContext context,
   ) async {
-
     questionSet(questionNumber);
     _countDownTimer(context);
     final stream =
         reference.snapshots().map((snapshot) => snapshot.data()!['abc'] ?? 404);
 
-    //ココは変なところで検知される。
-    // stream.listen((newValue) {
-    //   print('sssssssssssssss');
-    //   print(_ref.read(countDownTimerProvider.state).state .runtimeType );
-    //   print(newValue.runtimeType);
-    //
-    //   if (_ref.read(countDownTimerProvider.state).state > newValue) {
-    //     if (time == 0) {
-    //       reference.update({
-    //         'def': true,
-    //       });
-    //     }
-    //     time + 1;
-    //   } else if (cdStop) {
-    //     print('ここだよ');
-    //     //false
-    //   }
-    //   // do something with the new value
-    // });
+    stream.listen((newValue) {
+      if (_ref.read(countDownTimerProvider.state).state > newValue) {
+        if (time == 0) {
+          reference.update({
+            'def': true,
+          });
+        }
+        time + 1;
+      } else if (cdStop) {
 
-    _ref.read(firstProvider.notifier).state=false;
+      }
+    });
+
+    _ref.read(firstProvider.notifier).state = false;
   }
 
   buttonPress(context) async {
     cdStop = true;
-    print('adfasfas');
     await reference.set({'def': countDownNumber});
-    final stream =
-    reference.snapshots().map((snapshot) => snapshot.data()?['check'] ?? false);
+    final stream = reference
+        .snapshots()
+        .map((snapshot) => snapshot.data()?['check'] ?? false);
 
-    stream.listen((newValue)async {
-
-      if (newValue == true&&time==0) {
-        time=time+1;
+    stream.listen((newValue) async {
+      if (newValue == true && time == 0) {
+        time = time + 1;
         await ShowDialog(
-
-            process: (a, answer) async {
-              if (answer == correct) {
-                await showTestNumber(context, 100, 3);
+          process: (a, answer) async {
+            if (answer == correct) {
+              await showTestNumber(context, 100, 3);
 
               Navigator.pushNamed(context, 'commentary');
 
-                return;
-              }
-              print('fasfdsa');
-              a.cdStop = false;
-              a._countDownTimer(context);
-            },
-            a: this,complete:(a, answer) async {
-              print('hbjdfask');
-          a.cdStop = false;
-          print('count=');
-          print(_ref.read(countDownTimerProvider.notifier).state);
-          a._countDownTimer(context);
+              return;
+            }
+            a.cdStop = false;
+            a._countDownTimer(context);
+          },
+          a: this,
+          complete: (a, answer) async {
+            a.cdStop = false;
+            a._countDownTimer(context);
+          },
+        ).build(context); // cdStop = false;
+        // }
+      }
+    });
+  }
 
-
-
-        },)
-            .build(context);// cdStop = false;
-      // }
-    }});
-    }
   void setList(
       List<String> test, List<String> answer, List<String> commentary) {
     _ref.read(questionsListProvider.state).state =
@@ -139,7 +125,6 @@ class QuizPopUpViewModel {
   }
 
   Future<void> questionSet(int index) async {
-
     _ref.read(questionsProvider.notifier).state = Questions(
         test: _testList[index],
         answer: _answerList[index],
@@ -148,34 +133,24 @@ class QuizPopUpViewModel {
 
   void _countDownTimer(context) async {
     int cdNumberFirst = _ref.watch(countDownTimerProvider.notifier).state;
-   print('cdnumber');
-    print(cdNumberFirst);
     for (int i = 0; i < cdNumberFirst; i++) {
       int cdNumber = _ref.read(countDownTimerProvider.notifier).state;
-      // await _countDownLogic.countDownTimer();
-      await Future.delayed(Duration(milliseconds: 100),(){});
-     print(i);
+      await Future.delayed(Duration(milliseconds: 100), () {});
       if (i % 10 == 0) {
-        print('haitta');
         _ref.read(countDownTimerProvider.notifier).state = cdNumber - 10;
-     print(cdNumber);
       }
       if (i == 30) {
-        // _soundLogicSub.audioPlay('assets/sounds/新カウントダウン.mp3');
+        _soundLogicSub.audioPlay('assets/sounds/新カウントダウン.mp3');
       }
       if (i == 88) {
-        // _soundLogicSub.audioPlay('assets/sounds/ピー.mp3');
+        _soundLogicSub.audioPlay('assets/sounds/ピー.mp3');
       }
       if (cdStop) {
-        print('haitta?');
         _ref.watch(countDownTimerProvider.notifier).state = 100 - i;
-        // _soundLogicSub.audioStop();
         break;
       }
     }
     if (!cdStop) {
-      print('kokohaaa');
-
       Navigator.pushNamed(context, '/commentary');
     }
   }
@@ -183,10 +158,10 @@ class QuizPopUpViewModel {
   commentaryToQuiz() async {
     _ref.read(questionNumberProvider.notifier).update((state) => state + 1);
     _ref.read(countDownTimerProvider.notifier).update((state) => 100);
-    _ref.read(firstProvider.notifier).state=true;
-
-    // firstProcess(context1!);
+    _ref.read(firstProvider.notifier).state = true;
     time = 0;
     return questionNumber;
   }
+
+
 }

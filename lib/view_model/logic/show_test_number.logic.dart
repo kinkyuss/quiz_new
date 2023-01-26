@@ -24,8 +24,6 @@ import '../../model/device_data.dart';
         },
       ).timeout( Duration(seconds: time));
     } on TimeoutException {
-      print('a');
       Navigator.pop(context);
-
     }
   }

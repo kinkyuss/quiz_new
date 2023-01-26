@@ -16,14 +16,12 @@ class QuizPopUp1 extends StatelessWidget {
         QuizPopUpViewModel(context: context);
     DeviceSize size = DeviceSize(context);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      print('bakababababa');
       if (quizPopUpViewModel.first) {
-        print('ighafdkjijbkdf');
         await showTestNumber(context, quizPopUpViewModel.questionNumber, 1);
         quizPopUpViewModel.firstProcess(context);
       }
     });
-var b;
+    var b;
     return Scaffold(
       body: Stack(children: [
         const QQBackGround(),
@@ -57,7 +55,6 @@ var b;
                       }))),
                   InkWell(
                     onTap: () {
-
                       quizPopUpViewModel.buttonPress(context);
                     },
                     child: Container(
@@ -148,7 +145,7 @@ class AnimatedText extends StatelessWidget {
   final String text;
   final double delay;
 
-  AnimatedText({required this.text, this.delay = 0});
+  const AnimatedText({super.key, required this.text, this.delay = 0});
 
   @override
   Widget build(BuildContext context) {

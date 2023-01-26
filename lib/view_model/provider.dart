@@ -21,3 +21,6 @@ final firstProvider = StateProvider<bool>((ref) {return true;});
 final cdStop= StateProvider<bool>((ref) {return false;});
 final pushEmojiProvider = StateProvider<bool>((ref) {return false;});
 final questionNumberProvider = StateProvider<int>((ref) =>0);
+final muchStateProvider = StateProvider<String>((ref) =>'対戦相手を探しています。');
+final opponentProvider =StateProvider<Map>((ref) =>{});
+

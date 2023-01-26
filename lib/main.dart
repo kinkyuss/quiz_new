@@ -13,12 +13,12 @@ import 'package:quiz_new/view/quiz/much.dart';
 import 'package:quiz_new/view/quiz/quiz_answer.dart';
 import 'package:quiz_new/view/quiz/quiz_pop_up1.dart';
 import 'package:quiz_new/view/quiz/vi_or_de.dart';
-import 'package:quiz_new/view/quiz/wait_test.dart';
+import 'package:quiz_new/view/quiz/wait.dart';
 import 'package:quiz_new/view/ranking.dart';
 import 'package:quiz_new/view/settings.dart';
 import 'package:quiz_new/view/top.dart';
-import 'package:quiz_new/view_model/provider.dart';
 import 'package:quiz_new/view_model/logic/wait_logic.dart';
+import 'package:quiz_new/view_model/provider.dart';
 import 'firebase_options.dart';
 
 Future main() async {
@@ -46,20 +46,20 @@ Future<void> _initializeFirebaseAuth() async {
 class MyApp extends ConsumerWidget {
   MyApp({Key? key}) : super(key: key);
 
-  // final userUid = FirebaseAuth.instance.currentUser!.uid;
+  final userUid = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   Widget build(BuildContext context, ref) {
 
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   ref
-    //       .read(myInformationProvider.notifier)
-    //       .state =
-    //       ref
-    //           .read(myInformationProvider.state)
-    //           .state
-    //           .copyWith(uid: userUid);
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(myInformationProvider.notifier)
+          .state =
+          ref
+              .read(myInformationProvider.state)
+              .state
+              .copyWith(uid: userUid);
+    });
     return MaterialApp(
       useInheritedMediaQuery: true,
       debugShowCheckedModeBanner: false,
@@ -69,7 +69,7 @@ class MyApp extends ConsumerWidget {
           // textTheme: GoogleFonts.notoSansJavaneseTextTheme(),
           ),
       // home:const Top(),
-      initialRoute: '/much',
+      initialRoute: '/top',
       routes: {
         // 画面の名前とWidgetを紐づける
 
@@ -78,10 +78,8 @@ class MyApp extends ConsumerWidget {
         '/settings': (context) => const Settings(),
         '/course_choice': (context) => CourseChoice(),
         '/choice': (context) => Choice(),
-        '/wait': (context) => Wait(),
-        '/wait_test': (context) => const WaitTest(
-              status: '状態が読み取れません。',
-            ),
+        '/wait_logic': (context) => WaitLogic(),
+        '/wait': (context) => const Wait(),
         '/much': (context) => const Much(roomID: '相手の情報を取得できていません。'),
 
         '/quiz_pop_up1': (context) => QuizPopUp1(),

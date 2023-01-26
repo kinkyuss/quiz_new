@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:quiz_new/view_model/view_model/find_opponents.dart';
 import 'package:quiz_new/view_model/view_model/quiz_pop_up.dart';
 
 import 'model/device_data.dart';
@@ -32,9 +33,9 @@ class ShowDialog {
                 SingleChildScrollView(
                   child: TextField(
                     key: GlobalKey(),
-                    // onChanged: (value) {
-                    //   b = value;
-                    // },
+                    onChanged: (value) {
+                      b = value;
+                    },
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: '答えを入力してください。',
@@ -220,7 +221,7 @@ class QQBackGround extends StatelessWidget {
   }
 }
 
-class EnterButton extends StatelessWidget {
+class EnterButton extends ConsumerWidget {
   const EnterButton({
     Key? key,
     required this.viewModel,
@@ -229,12 +230,14 @@ class EnterButton extends StatelessWidget {
   final ViewModel viewModel;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,ref) {
     DeviceSize size = DeviceSize(context);
+    FindOpponents model=FindOpponents();
+    model.setRef(ref);
 
     return InkWell(
       enableFeedback: false,
-      onTap: () => viewModel.findOpponents(context),
+      onTap: () => model.fireStoreWrite(context),
       child: Container(
           height: size.height * 0.08,
           width: size.width * 0.4,
@@ -255,19 +258,91 @@ class EnterButton extends StatelessWidget {
   }
 }
 
+class ColumnFlame extends StatelessWidget {
+  const ColumnFlame({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    DeviceSize size = DeviceSize(context);
+    return Stack(clipBehavior: Clip.none, children: [
+      Container(
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: HexColor('#E6B422'), width: 4)),
+          color: HexColor('#342C3C').withOpacity(0.8),
+        ),
+        height: size.height * 0.35,
+        width: size.width,
+        child: Column(
+          children: [
+            SizedBox(height: size.height * 0.06),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                OftenText(text: 'Q', smallFontSize: 20).small(context),
+                OftenText(text: '月まで不眠不休で歩くとどれくらいかかる？\n', smallFontSize: 20)
+                    .small(context)
+              ],
+            ),
+            Flexible(
+              child: OftenText(
+                  text:
+                  '人間の平均歩行時速を４kmとし、月から地球の距離を３８万kmとすると、約１１年かかります。ちなみに、時速１０００ｋｍのジェット旅客機であれば、約１５．８日かかります。',
+                  smallFontSize: 20)
+                  .small(context),
+            )
+          ],
+        ),
+      ),
+      Positioned(
+        top: -30,
+        child: Container(
+          height: size.height * 0.075,
+          width: size.width * 0.4,
+          decoration: BoxDecoration(
+              border: Border.all(color: HexColor('#E6B422'), width: 3),
+              borderRadius: BorderRadius.circular(30),
+              color: HexColor('#887c66')),
+          child: Center(
+            child: Text('Column',
+                style: TextStyle(
+                  fontSize: size.textScaleFactor * 30,
+                  color: Colors.white,
+                  decoration: TextDecoration.none,
+                  fontStyle: FontStyle.italic,
+                )),
+          ),
+        ),
+      ),
+    ]);
+  }
+}
+
+class HexColor extends Color {
+  static int _getColorFromHex(String hexColor) {
+    hexColor = hexColor.toUpperCase().replaceAll('#', '');
+    if (hexColor.length == 6) {
+      hexColor = 'FF' + hexColor;
+    }
+    return int.parse(hexColor, radix: 16);
+  }
+
+  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
+}
+
+
 class LoadingAnimation extends StatelessWidget {
   const LoadingAnimation({
     Key? key,
     required AnimationController controller,
-    required this.size,
   })  : _controller = controller,
         super(key: key);
 
   final AnimationController _controller;
-  final DeviceSize size;
-
   @override
   Widget build(BuildContext context) {
+    DeviceSize size=DeviceSize(context);
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
@@ -276,8 +351,8 @@ class LoadingAnimation extends StatelessWidget {
           child: child,
         );
       },
-      child: Image.asset("assets/images/globe.png",
-          scale: size.textScaleFactor / 1.25),
+      child: Image.asset("assets/images/地球.png",
+          scale: size.textScaleFactor / 1),
     );
   }
 }
