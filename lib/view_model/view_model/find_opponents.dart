@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:convert' as convert;
 
@@ -35,8 +36,6 @@ class FindOpponents {
         .collection('waitingUsers')
         .doc(myInformation.uid)
         .set({'status': 'waiting', 'updateAt': unixTime});
-    print('/waitに遷移しました。');
-    await Navigator.pushNamed(context, '/wait');
   }
 
   findStart(context) async {
@@ -46,32 +45,38 @@ class FindOpponents {
       'waitingUsers',
       myInformation.uid,
     );
-    stream.listen((newValue) {
+   stream.timeout(const Duration(seconds: 30)).listen((newValue) {
       bool exit = newValue.data()['matchedID'] == null ? false : true;
       if ((newValue.data() as Map<String, dynamic>).containsKey("matchedID")) {
+        _ref.read(muchStateProvider.notifier).state = '対戦相手が見つかりました。';
         _muchID = newValue.data()['matchedID'];
         _roomID = newValue.data()['roomID'];
         writeMyInformation();
+        print('kokomadehakiteiru');
         Stream<dynamic> streamMuchID = finalCheck();
         streamMuchID.listen((newValue) {
           if ((newValue.data() as Map<String, dynamic>)
               .containsKey('${_muchID}information')) {
             Map opponent = newValue.data()!['${_muchID}information'];
             print('相手の情報はこちら→$opponent');
+            print('opponent=$opponent');
             _ref.read(opponentProvider.notifier).state = opponent;
             print('riverpodへ');
             Navigator.pushNamed(context, '/much');
           }
         });
       }
-    });
+    }, onError: (e) {
+     if (e is TimeoutException) {
+       Navigator.pop(context);
+     }
+   });
   }
 
   // Navigator.pop(context);
 
   finalCheck() {
     print('finalCheck関数に入りました。');
-    _ref.read(muchStateProvider.notifier).state = '対戦相手が見つかりました。';
     print(muchState);
     _fireStoreLogic.write('rooms', _roomID, myInformation.uid, '王');
     Stream<dynamic> streamMuchID = _fireStoreLogic.readStream(
@@ -87,6 +92,6 @@ class FindOpponents {
     final myInformationJsonToMap =
         convert.json.decode(myInformationJson) as Map<String, dynamic>;
     _fireStoreLogic.write(
-        'rooms', _roomID, '${_muchID}information', myInformationJsonToMap);
+        'rooms', _roomID, '${myInformation.uid}information', myInformationJsonToMap);
   }
 }

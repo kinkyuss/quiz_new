@@ -237,8 +237,9 @@ class EnterButton extends ConsumerWidget {
 
     return InkWell(
       enableFeedback: false,
-      onTap: () => model.fireStoreWrite(context),
-      child: Container(
+      onTap: () => Navigator.pushNamed(context, '/wait'),
+
+    child: Container(
           height: size.height * 0.08,
           width: size.width * 0.4,
           decoration: BoxDecoration(
@@ -358,15 +359,18 @@ class LoadingAnimation extends StatelessWidget {
 }
 
 class UserInformation extends StatelessWidget {
+
+
   const UserInformation({
     Key? key,
-    required this.size,
+     required this.information,
   }) : super(key: key);
 
-  final DeviceSize size;
+  final Map information;
 
   @override
   Widget build(BuildContext context) {
+    DeviceSize size=DeviceSize(context);
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.white, width: 1),
@@ -388,7 +392,7 @@ class UserInformation extends StatelessWidget {
                         image: AssetImage('assets/images/guest_icon.png'),
                         fit: BoxFit.cover,
                       ))),
-              Text('あなた',
+              Text(information['name'],
                   style: TextStyle(
                     fontSize: size.textScaleFactor * 20,
                     color: Colors.white,
@@ -411,7 +415,7 @@ class UserInformation extends StatelessWidget {
                     color: Colors.white,
                     decoration: TextDecoration.none,
                   )),
-              Text('11連勝中!!',
+              Text('${information['consecutive']}連勝中!!',
                   style: TextStyle(
                     fontSize: size.textScaleFactor * 20,
                     color: Colors.red,

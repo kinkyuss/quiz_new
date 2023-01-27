@@ -17,6 +17,7 @@ class Wait extends HookWidget {
     FindOpponents model=FindOpponents();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      model.fireStoreWrite(context);
       model.findStart(context);
     });
 

@@ -40,11 +40,19 @@ class QuizPopUpViewModel {
   late final List<String> _commentaryList =
       _ref.watch(questionsListProvider.state).state.commentary;
 
+  get commentary => _ref.watch(questionsProvider.state).state.commentary;
+
   get test => _ref.watch(questionsProvider.state).state.test;
 
   get correct => _ref.watch(questionsProvider.state).state.answer;
 
-  get commentary => _ref.watch(questionsProvider.state).state.commentary;
+  get myInformation => {
+        'uid': _ref.read(myInformationProvider).uid,
+        'consecutive': _ref.read(myInformationProvider).consecutive,
+        'name': _ref.read(myInformationProvider).name
+      };
+
+  get opponentInformation => _ref.watch(opponentProvider.state).state;
 
   get countDownNumber =>
       '${_ref.watch(countDownTimerProvider.state).state / 10}'.substring(0, 1);
@@ -75,15 +83,14 @@ class QuizPopUpViewModel {
           });
         }
         time + 1;
-      } else if (cdStop) {
-
-      }
+      } else if (cdStop) {}
     });
 
     _ref.read(firstProvider.notifier).state = false;
   }
 
   buttonPress(context) async {
+
     cdStop = true;
     await reference.set({'def': countDownNumber});
     final stream = reference
@@ -162,6 +169,4 @@ class QuizPopUpViewModel {
     time = 0;
     return questionNumber;
   }
-
-
 }

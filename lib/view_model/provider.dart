@@ -9,7 +9,7 @@ import '../model/device_data.dart';
 import '../model/questios_relation.dart';
 
 final chosenProvider = StateProvider <ChosenData>((ref) => ChosenData());
-final myInformationProvider = StateProvider <MyInformation>((ref) => const MyInformation(name:'松村千里', uid:'Uidが登録されていません。', consecutive: 1));
+final myInformationProvider = StateProvider <MyInformation>((ref) => const MyInformation(name:'東条小太郎', uid:'Uidが登録されていません。', consecutive: 10));
 final countDownTimerProvider=StateProvider <int>((ref) =>100);
 
 final questionsListProvider = StateProvider <QuestionsList>((ref) =>

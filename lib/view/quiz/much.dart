@@ -28,9 +28,9 @@ class _MuchState extends ConsumerState<Much> {
   void initState() {
     super.initState();
 
-    timer = Timer(const Duration(seconds: 3), () {
-      Navigator.pushNamed(context, '/quiz_pop_up1');
-    });
+    // timer = Timer(const Duration(seconds: 3), () {
+    //   Navigator.pushNamed(context, '/quiz_pop_up1');
+    // });
   }
 
   @override
@@ -54,11 +54,11 @@ class _MuchState extends ConsumerState<Much> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              UserInformation(size: size),
+              UserInformation(information: quizPopUpViewModel.myInformation,),
               SizedBox(height: size.height * 0.025),
               OftenText(text: 'VS').large(context),
               SizedBox(height: size.height * 0.025),
-              UserInformation(size: size),
+              UserInformation(information:quizPopUpViewModel.opponentInformation,),
             ],
           ),
         ),
