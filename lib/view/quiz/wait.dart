@@ -17,13 +17,16 @@ class Wait extends HookWidget {
     FindOpponents model=FindOpponents();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      model.fireStoreWrite(context);
+      await model.fireStoreWrite(context);
       model.findStart(context);
     });
 
     final animationController =
         useAnimationController(duration: const Duration(seconds: 7));
     animationController.repeat();
+    final now = DateTime.now();
+    int unixTime = now.millisecondsSinceEpoch;
+    print('seconds=$unixTime');
 
     return Stack(children: [
       const MainBackGround(),

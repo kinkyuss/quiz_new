@@ -59,11 +59,15 @@ class QuizPopUpViewModel {
 
   get first => _ref.watch(firstProvider.state).state;
 
+  get roomID => _ref.read(matchInformationProvider.state).state['roomID'];
+
+  get matchID => _ref.read(matchInformationProvider.state).state['matchID'];
+
   get questionNumber => _ref.watch(questionNumberProvider.state).state;
   late DocumentReference<Map<String, dynamic>> reference = FirebaseFirestore
       .instance
       .collection('rooms')
-      .doc('5BqhH1uf3QwgGiNK1LhG')
+      .doc(roomID)
       .collection('time')
       .doc('quiz$questionNumber');
 
@@ -72,32 +76,42 @@ class QuizPopUpViewModel {
   ) async {
     questionSet(questionNumber);
     _countDownTimer(context);
-    final stream =
-        reference.snapshots().map((snapshot) => snapshot.data()!['abc'] ?? 404);
+    final stream = reference
+        .snapshots()
+        .map((snapshot) => snapshot.data()![matchID] ?? 404);
 
     stream.listen((newValue) {
-      if (_ref.read(countDownTimerProvider.state).state > newValue) {
+
+      print('相手がボタンを押しました');
+      print(newValue);
+      print(_ref.read(countDownTimerProvider.state).state - 1 );
+      if (_ref.read(countDownTimerProvider.state).state - 5 > newValue) {
+        print('自分より相手の方が早いです。');
+        print(time);
         if (time == 0) {
           reference.update({
-            'def': true,
+            'check': true,
           });
         }
         time + 1;
-      } else if (cdStop) {}
+      } else if (cdStop) {
+        print('まさかのここに入っています。');
+      }
     });
 
     _ref.read(firstProvider.notifier).state = false;
   }
 
   buttonPress(context) async {
-
     cdStop = true;
-    await reference.set({'def': countDownNumber});
+    await reference.set({myInformation['uid']: _ref.read(countDownTimerProvider.state).state});
+
     final stream = reference
         .snapshots()
         .map((snapshot) => snapshot.data()?['check'] ?? false);
 
     stream.listen((newValue) async {
+      print('newValue=' + newValue);
       if (newValue == true && time == 0) {
         time = time + 1;
         await ShowDialog(

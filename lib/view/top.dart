@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:ntp/ntp.dart';
 import 'package:quiz_new/component.dart';
 import 'package:quiz_new/model/device_data.dart';
 
@@ -28,9 +29,26 @@ class _TopState extends State<Top> with SingleTickerProviderStateMixin {
       end: const Offset(-1.0, 0.0),
     ).animate(_controller);
   }
+  Future<void> getNetworkTime() async {
+    DateTime _myTime;
+    DateTime _ntpTime;
+
+    /// Or you could get NTP current (It will call DateTime.now() and add NTP offset to it)
+    _myTime = await NTP.now();
+
+    /// Or get NTP offset (in milliseconds) and add it yourself
+    final int offset = await NTP.getNtpOffset(localTime: DateTime.now());
+    _ntpTime = _myTime.add(Duration(milliseconds: offset));
+
+    print('My time: ${_myTime.millisecondsSinceEpoch}');
+    print('NTP time: $_ntpTime');
+    print('Difference: ${_myTime.difference(_ntpTime).inMilliseconds}ms');
+    }
 
   @override
   Widget build(BuildContext context) {
+
+
     DeviceSize size = DeviceSize(context);
     return SafeArea(
         child: Scaffold(
@@ -84,7 +102,11 @@ class _TopState extends State<Top> with SingleTickerProviderStateMixin {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SubButton(size: size, icon: Icons.local_post_office),
+                  InkWell(onTap: ()
+                  async{var myTime =  await NTP.now() ;
+                  print('fdadsaf');
+                  print(myTime.microsecondsSinceEpoch);
+                  },child: SubButton(size: size, icon: Icons.local_post_office)),
                   SubButton(size: size, icon: Icons.edit),
                   SubButton(size: size, icon: Icons.settings)
                 ],

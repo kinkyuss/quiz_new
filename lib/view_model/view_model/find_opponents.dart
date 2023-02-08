@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:convert' as convert;
+import 'package:ntp/ntp.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class FindOpponents {
   }
 
   late String _roomID;
-  late String _muchID;
+  late String _matchID;
   late var myInformation = _ref.read(myInformationProvider.notifier).state;
   final SoundLogic _soundLogicMain = SoundLogic();
   final SoundLogic _soundLogicSub = SoundLogic();
@@ -30,12 +31,11 @@ class FindOpponents {
   fireStoreWrite(context) async {
     print('fireStoreWrite関数に入りました。');
     _soundLogicSub.audioPlay('assets/sounds/enter.mp3');
-    final now = DateTime.now();
-    int unixTime = now.millisecondsSinceEpoch;
+    var _myTime = await NTP.now();
     await FirebaseFirestore.instance
         .collection('waitingUsers')
         .doc(myInformation.uid)
-        .set({'status': 'waiting', 'updateAt': unixTime});
+        .set({'status': 'waiting', 'updateAt': _myTime.microsecondsSinceEpoch});
   }
 
   findStart(context) async {
@@ -45,24 +45,29 @@ class FindOpponents {
       'waitingUsers',
       myInformation.uid,
     );
-   stream.timeout(const Duration(seconds: 30)).listen((newValue) {
+   stream.timeout(const Duration(seconds: 30)).listen((newValue) async{
       bool exit = newValue.data()['matchedID'] == null ? false : true;
       if ((newValue.data() as Map<String, dynamic>).containsKey("matchedID")) {
         _ref.read(muchStateProvider.notifier).state = '対戦相手が見つかりました。';
-        _muchID = newValue.data()['matchedID'];
+        _matchID = newValue.data()['matchedID'];
         _roomID = newValue.data()['roomID'];
+        var startTime=newValue.data()['startTime'];
+
+
+
         writeMyInformation();
         print('kokomadehakiteiru');
         Stream<dynamic> streamMuchID = finalCheck();
-        streamMuchID.listen((newValue) {
+        streamMuchID.listen((newValue) async{
           if ((newValue.data() as Map<String, dynamic>)
-              .containsKey('${_muchID}information')) {
-            Map opponent = newValue.data()!['${_muchID}information'];
+              .containsKey('${_matchID}information')) {
+            Map opponent = newValue.data()!['${_matchID}information'];
             print('相手の情報はこちら→$opponent');
             print('opponent=$opponent');
             _ref.read(opponentProvider.notifier).state = opponent;
-            print('riverpodへ');
-            Navigator.pushNamed(context, '/much');
+            _ref.read(matchInformationProvider.notifier).state={'matchID':_matchID,'roomID':_roomID};
+
+            Navigator.pushNamed(context, '/much',arguments: startTime);
           }
         });
       }

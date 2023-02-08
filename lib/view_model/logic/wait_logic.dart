@@ -55,7 +55,6 @@ class WaitLogic extends ConsumerWidget {
 
 
                         return Much(
-                          roomID: roomID,
                         );
                       }
                     });

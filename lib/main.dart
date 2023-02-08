@@ -80,7 +80,7 @@ class MyApp extends ConsumerWidget {
         '/choice': (context) => Choice(),
         '/wait_logic': (context) => WaitLogic(),
         '/wait': (context) => const Wait(),
-        '/much': (context) => const Much(roomID: '相手の情報を取得できていません。'),
+        '/much': (context) => const Much(),
 
         '/quiz_pop_up1': (context) => QuizPopUp1(),
         '/commentary':(context)=>const Commentary(),
