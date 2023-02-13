@@ -9,8 +9,9 @@ class QuestionsList with _$QuestionsList {
   const factory QuestionsList({
     required List <String> test,
     required List <String> answer,
+    required List <String> answerForSelect,
+    required List <List<String>>  similarAnswer,
     required List <String> commentary,
-
   }) = _QuestionsList;
 
   factory QuestionsList.fromJson(Map<String, dynamic> json) =>

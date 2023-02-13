@@ -18,6 +18,7 @@ class Choice extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
+
             SizedBox(
               height: deviceHeight * 0.0275,
             ),

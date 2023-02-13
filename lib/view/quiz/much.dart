@@ -13,14 +13,10 @@ class Much extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    int startTime = ModalRoute.of(context)!.settings.arguments as int;
-    print(startTime);
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      var myTime = await NTP.now();
-      int offset = startTime - myTime.microsecondsSinceEpoch;
-      print('offset=オフセット$offset');
-      await Future.delayed(Duration(microseconds: offset), () async {
-        Navigator.pushNamed(context, '/quiz_pop_up1');
+      await Future.delayed(const Duration(microseconds: 5000000), () async {
+        Navigator.pushReplacementNamed(context, '/quiz_pop_up1');
       });
     });
     DeviceSize size = DeviceSize(context);
@@ -41,9 +37,9 @@ class Much extends ConsumerWidget {
               SizedBox(height: size.height * 0.025),
               OftenText(text: 'VS').large(context),
               SizedBox(height: size.height * 0.025),
-              UserInformation(
-                information: quizPopUpViewModel.opponentInformation,
-              ),
+              // UserInformation(
+              //   information: quizPopUpViewModel.opponentInformation,
+              // ),
             ],
           ),
         ),

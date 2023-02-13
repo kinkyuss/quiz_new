@@ -16,10 +16,13 @@ import 'package:quiz_new/view/quiz/vi_or_de.dart';
 import 'package:quiz_new/view/quiz/wait.dart';
 import 'package:quiz_new/view/ranking.dart';
 import 'package:quiz_new/view/settings.dart';
+import 'package:quiz_new/view/test.dart';
 import 'package:quiz_new/view/top.dart';
 import 'package:quiz_new/view_model/logic/wait_logic.dart';
 import 'package:quiz_new/view_model/provider.dart';
 import 'firebase_options.dart';
+import 'package:sizer/sizer.dart';
+
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +36,8 @@ Future main() async {
     ),
   );
 }
+
+
 
 Future<void> _initializeFirebaseAuth() async {
   await Firebase.initializeApp();
@@ -60,38 +65,43 @@ class MyApp extends ConsumerWidget {
               .state
               .copyWith(uid: userUid);
     });
-    return MaterialApp(
-      useInheritedMediaQuery: true,
-      debugShowCheckedModeBanner: false,
-      //
-      title: 'Flutter Demo',
-      theme: ThemeData(
-          // textTheme: GoogleFonts.notoSansJavaneseTextTheme(),
-          ),
-      // home:const Top(),
-      initialRoute: '/top',
-      routes: {
-        // 画面の名前とWidgetを紐づける
 
-        '/top': (context) =>  const Top(),
-        '/ranking': (context) => const Ranking(),
-        '/settings': (context) => const Settings(),
-        '/course_choice': (context) => CourseChoice(),
-        '/choice': (context) => Choice(),
-        '/wait_logic': (context) => WaitLogic(),
-        '/wait': (context) => const Wait(),
-        '/much': (context) => const Much(),
+  return   Sizer(
+        builder: (context, orientation, deviceType) {
+          return MaterialApp(
+            useInheritedMediaQuery: true,
+            debugShowCheckedModeBanner: false,
+            //
+            title: 'Flutter Demo',
+            theme: ThemeData(
+              // textTheme: GoogleFonts.notoSansJavaneseTextTheme(),
+            ),
+            // home:const Top(),
+            initialRoute: '/top',
 
-        '/quiz_pop_up1': (context) => QuizPopUp1(),
-        '/commentary':(context)=>const Commentary(),
+            routes: {
+              // 画面の名前とWidgetを紐づける
+              '/test':(context)=> Test(),
+              '/top': (context) => const Top(),
+              '/ranking': (context) => const Ranking(),
+              '/settings': (cotntext) => const Settings(),
+              '/course_choice': (context) => CourseChoice(),
+              '/choice': (context) => Choice(),
+              '/wait_logic': (context) => WaitLogic(),
+              '/wait': (context) => const Wait(),
+              '/much': (context) => const Much(),
 
-        '/quiz_answer': (context) => const QuizAnswer(),
-        '/chat_room': (context) => const ChatRoom(),
-        '/vi_or_de': (context) => const ViOrDe(),
-        '/premium': (context) => const PremiumMain(),
-        '/detail': (context) => const Detail(),
-        '/review': (context) => const Review(),
-      },
-    );
-  }
+              '/quiz_pop_up1': (context) => QuizPopUp1(),
+              '/commentary': (context) => const Commentary(),
+
+              '/quiz_answer': (context) => const QuizAnswer(),
+              '/chat_room': (context) => const ChatRoom(),
+              '/vi_or_de': (context) => const ViOrDe(),
+              '/premium': (context) => const PremiumMain(),
+              '/detail': (context) => const Detail(),
+              '/review': (context) => const Review(),
+            },
+
+          );
+        });}
 }

@@ -10,7 +10,13 @@ class SoundLogic {
   }
   Future<void> audioStop() async {
     await _player.stop();
+
   }
+  Future<void> audioResume() async {
+    await _player.play();
+
+  }
+
 
 
 }

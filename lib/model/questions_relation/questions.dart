@@ -11,7 +11,8 @@ class Questions with _$Questions {
     required String test,
     required String answer,
     required String commentary,
-
+    required String answerForSelect,
+    required List<String> similarAnswer,
   }) = _Questions;
 
   factory Questions.fromJson(Map<String, dynamic> json) =>

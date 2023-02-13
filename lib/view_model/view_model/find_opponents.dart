@@ -52,22 +52,21 @@ class FindOpponents {
         _matchID = newValue.data()['matchedID'];
         _roomID = newValue.data()['roomID'];
         var startTime=newValue.data()['startTime'];
-
-
-
         writeMyInformation();
-        print('kokomadehakiteiru');
         Stream<dynamic> streamMuchID = finalCheck();
+        print('kita');
         streamMuchID.listen((newValue) async{
+
           if ((newValue.data() as Map<String, dynamic>)
               .containsKey('${_matchID}information')) {
+            print('haitta');
             Map opponent = newValue.data()!['${_matchID}information'];
-            print('相手の情報はこちら→$opponent');
-            print('opponent=$opponent');
+            print(opponent);
             _ref.read(opponentProvider.notifier).state = opponent;
             _ref.read(matchInformationProvider.notifier).state={'matchID':_matchID,'roomID':_roomID};
-
-            Navigator.pushNamed(context, '/much',arguments: startTime);
+            _ref.read(startTimeProvider.notifier).state=startTime;
+            print('kita');
+             Navigator.pushNamed(context, '/much');
           }
         });
       }
@@ -88,6 +87,7 @@ class FindOpponents {
       'rooms',
       _roomID,
     );
+    print(streamMuchID);
     return streamMuchID;
   }
 

@@ -16,6 +16,7 @@ import '../../model/device_data.dart';
             height: size.height * 0.2,
             width: size.width * 0.6,
             child: Card(
+              margin: EdgeInsets.all(100),
               child: Center(
                   child: OftenText(text: '第$index問', color: Colors.black)
                       .large(context)),

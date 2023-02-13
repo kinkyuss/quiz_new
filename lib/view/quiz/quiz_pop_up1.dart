@@ -1,40 +1,43 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quiz_new/component.dart';
-import 'package:quiz_new/model/device_data.dart';
-import 'package:quiz_new/view_model/logic/show_test_number.logic.dart';
-import 'package:quiz_new/view_model/view_model/quiz_pop_up.dart';
+import 'package:sizer/sizer.dart';
+import '../../model/device_data.dart';
+import '../../view_model/provider.dart';
+import '../../view_model/view_model/quiz_pop_up.dart';
 
 class QuizPopUp1 extends StatelessWidget {
   QuizPopUp1({Key? key}) : super(key: key);
 
-  bool check = false;
+
+
 
   @override
   Widget build(BuildContext context) {
     QuizPopUpViewModel quizPopUpViewModel =
-        QuizPopUpViewModel(context: context);
+    QuizPopUpViewModel(context: context);
     DeviceSize size = DeviceSize(context);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (quizPopUpViewModel.first) {
-        await showTestNumber(context, quizPopUpViewModel.questionNumber, 1);
+
         quizPopUpViewModel.firstProcess(context);
-      }
+
     });
-    var b;
     return Scaffold(
+
       body: Stack(children: [
         const QQBackGround(),
         SingleChildScrollView(
           child: SizedBox(
-            height: size.height,
+            height: 100.h,
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
                       decoration: BoxDecoration(
                           border:
-                              Border.all(width: 4, color: Colors.tealAccent),
+                          Border.all(width: 4, color: Colors.tealAccent),
                           color: Colors.teal,
                           borderRadius: BorderRadius.circular(20),
                           gradient: const LinearGradient(
@@ -46,40 +49,64 @@ class QuizPopUp1 extends StatelessWidget {
                               1.0,
                             ],
                           )),
-                      height: size.height * 0.4,
+                      height: 40.h,
                       width: double.infinity,
                       child: FittedBox(
+                        child: Consumer(builder: (context, ref, child) {
+                          quizPopUpViewModel.setRef(ref);
+                          return Text(quizPopUpViewModel.test);
+                        }),
+                      )),
+
+                  Row(
+                    children: [
+                      SizedBox(
+                          width: 10.h,
+                          height: 10.h,
                           child: Consumer(builder: (context, ref, child) {
-                        quizPopUpViewModel.setRef(ref);
-                        return Text(quizPopUpViewModel.test);
-                      }))),
+                            quizPopUpViewModel.setRef(ref);
+                            String count = quizPopUpViewModel.countDownNumber.toString().substring(0,quizPopUpViewModel.countDownNumber.length-2);
+
+                            return Stack(fit: StackFit.expand, children: [
+                              CircularProgressIndicator(
+                                  value: (100-ref.watch(countDownTimerProvider.notifier).state)/100,
+                                  valueColor:
+                                  AlwaysStoppedAnimation(Colors.red),
+                                  strokeWidth: 12,
+                                  backgroundColor: Colors.white),
+                              Container(
+                                height:8.h,
+                                width:8.h,
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  shape: BoxShape.circle,
+                                ),
+
+                                child: Center(
+                                    child: Text(
+                                      count=='-0'?'0':count,
+                                      style: TextStyle(
+                                        fontSize:50,
+                                          color:
+                                          double.parse(count).floor() > 5 ? Colors.white : Colors.red),
+                                    )),
+                              )
+                            ]);
+                          })),
+                      Spacer(),
+                    ],
+                  ),
                   InkWell(
                     onTap: () {
                       quizPopUpViewModel.buttonPress(context);
                     },
                     child: Container(
-                        height: size.width * 0.5,
-                        width: size.width * 0.5,
+                        height: 30.h,
+                        width: 30.h,
                         decoration: const BoxDecoration(
                             image: DecorationImage(
                                 image: AssetImage('assets/images/早押しクイズ.png'),
                                 fit: BoxFit.cover))),
-                  ),
-                  Container(
-                    height: size.height * 0.1,
-                    width: size.height * 0.1,
-                    color: Colors.red,
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: Consumer(builder:
-                          (BuildContext context, WidgetRef ref, child) {
-                        quizPopUpViewModel.setRef(ref);
-                        return Text(
-                          quizPopUpViewModel.countDownNumber.toString(),
-                          style: TextStyle(color: Colors.white),
-                        );
-                      }),
-                    ),
                   ),
                   Table(
                     border: TableBorder.all(color: Colors.black),

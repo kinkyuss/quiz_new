@@ -4,13 +4,9 @@ class FireStoreLogic {
   final _instance = FirebaseFirestore.instance;
 
   readStream(String collection, String doc, ) {
-    print('readStreamに入った');
     var reference = _instance.collection(collection).doc(doc);
-
     final stream = reference
         .snapshots();
-        // .map((snapshot){ snapshot.data()![field] ?? exception;});
-
     return stream;
   }
 

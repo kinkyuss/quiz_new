@@ -27,7 +27,7 @@ class Commentary extends ConsumerWidget {
       await quizPopUpViewModel.commentaryToQuiz();
     Navigator.pushReplacementNamed(context, '/quiz_pop_up1');
     });
-    print('provider=${ref.watch(pushEmojiProvider.state).state}');
+
     return Material(
       child: SafeArea(
         child: Stack(

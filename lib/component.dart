@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quiz_new/view_model/view_model/find_opponents.dart';
@@ -6,12 +8,33 @@ import 'package:quiz_new/view_model/view_model/quiz_pop_up.dart';
 import 'model/device_data.dart';
 import 'view_model/view_model.dart';
 
+class CorrectOrWrong {
+  final String result;
+
+  CorrectOrWrong(
+      {required this.result});
+
+  build(BuildContext context) async {
+
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0))),
+              content: Text('正解!!'));
+        });
+
+}}
+
+
 class ShowDialog {
   final Function process;
   final a;
   final complete;
+  final context;
 
-  ShowDialog({required this.process, required this.complete,required this.a});
+  ShowDialog({required this.process, required this.complete,required this.a,required this.context});
 
   build(BuildContext context) {
 
@@ -20,7 +43,7 @@ class ShowDialog {
     return showDialog(
       barrierDismissible: true,
       context: context,
-      builder: (BuildContext context) {
+      builder: (dialogContext) {
 
 
         return AlertDialog(
@@ -32,7 +55,7 @@ class ShowDialog {
               children: [
                 SingleChildScrollView(
                   child: TextField(
-                    key: GlobalKey(),
+
                     onChanged: (value) {
                       b = value;
                     },
@@ -54,7 +77,6 @@ class ShowDialog {
                       TextButton(
                       child: const Text('決定'),
                       onPressed: () async {
-                        print('answer=$b');
                         await process(a, b);
 
                       },
@@ -91,8 +113,10 @@ class OftenText {
     DeviceSize size = DeviceSize(context);
     return Text(
       text,
+
       style: TextStyle(
         fontSize: size.textScaleFactor * largeFontSize,
+
         color: color,
         decoration: TextDecoration.none,
       ),
