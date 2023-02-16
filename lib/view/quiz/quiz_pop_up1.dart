@@ -16,13 +16,12 @@ class QuizPopUp1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('hairiamjkjksita');
     QuizPopUpViewModel quizPopUpViewModel =
     QuizPopUpViewModel(context: context);
     DeviceSize size = DeviceSize(context);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-
         quizPopUpViewModel.firstProcess(context);
-
     });
     return Scaffold(
 

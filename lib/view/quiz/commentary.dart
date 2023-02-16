@@ -1,32 +1,45 @@
-import 'dart:io';
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quiz_new/component.dart';
-import 'package:quiz_new/view_model/logic/show_test_number.logic.dart';
 import 'package:quiz_new/view_model/provider.dart';
 import 'package:quiz_new/view_model/view_model/quiz_pop_up.dart';
-
 import '../../model/device_data.dart';
 
-class Commentary extends ConsumerWidget {
+class Commentary extends ConsumerStatefulWidget {
   const Commentary({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, ref) {
-    DeviceSize size = DeviceSize(context);
-    QuizPopUpViewModel quizPopUpViewModel =
-        QuizPopUpViewModel(context1: context);
-    quizPopUpViewModel.setRef(ref);
-    WidgetsBinding.instance.addPostFrameCallback((_)async {
+  ConsumerState<Commentary> createState() => _CommentaryState();
+}
 
-      await Future.delayed(Duration(seconds: 5), ()async {
-                 // await showTestNumber(context, 1, 3);
-      });
+class _CommentaryState extends ConsumerState<Commentary> {
+  QuizPopUpViewModel model=QuizPopUpViewModel();
 
-      await quizPopUpViewModel.commentaryToQuiz();
-    Navigator.pushReplacementNamed(context, '/quiz_pop_up1');
+  Timer ? timer;
+  @override
+  void initState() {
+
+    model.setRef(ref);
+    timer=Timer(Duration(seconds: 3), (){
+      Navigator.pushReplacementNamed(context, '/quiz_pop_up1');
     });
+
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+
+   DeviceSize size=DeviceSize(context);
 
     return Material(
       child: SafeArea(
@@ -51,22 +64,20 @@ class Commentary extends ConsumerWidget {
                         )),
                     height: size.height * 0.7,
                     width: double.infinity,
-                    child: Consumer(builder: (context, ref, child) {
-                      quizPopUpViewModel.setRef(ref);
-                      return Column(
+                    child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Wrap(
                             crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
-                              OftenText(text: quizPopUpViewModel.correct)
+                              OftenText(text: model.correct)
                                   .medium(context),
                             ],
                           ),
                           SizedBox(
                             height: size.height * 0.1,
                           ),
-                          OftenText(text: quizPopUpViewModel.commentary)
+                          OftenText(text: model.commentary)
                               .small(context),
                           const Spacer(),
                           Row(
@@ -80,8 +91,7 @@ class Commentary extends ConsumerWidget {
                             ],
                           ),
                         ],
-                      );
-                    })),
+                      )),
                 Spacer(),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -108,25 +118,25 @@ class Commentary extends ConsumerWidget {
                     ),
                     ref.watch(pushEmojiProvider.notifier).state
                         ? InkWell(
-                            onTap: () => ref
-                                .watch(pushEmojiProvider.notifier)
-                                .state = false,
-                            child: Container(
-                              height: size.height * 0.2,
-                              width: size.width * 0.4,
-                              color: Colors.white.withOpacity(0.6),
-                            ),
-                          )
+                      onTap: () => ref
+                          .watch(pushEmojiProvider.notifier)
+                          .state = false,
+                      child: Container(
+                        height: size.height * 0.2,
+                        width: size.width * 0.4,
+                        color: Colors.white.withOpacity(0.6),
+                      ),
+                    )
                         : InkWell(
-                            onTap: () => ref
-                                .watch(pushEmojiProvider.notifier)
-                                .state = true,
-                            child: Container(
-                              height: 50,
-                              width: 50,
-                              color: Colors.white.withOpacity(0.6),
-                            ),
-                          ),
+                      onTap: () => ref
+                          .watch(pushEmojiProvider.notifier)
+                          .state = true,
+                      child: Container(
+                        height: 50,
+                        width: 50,
+                        color: Colors.white.withOpacity(0.6),
+                      ),
+                    ),
                     Row(
                       children: [
                         OftenText(text: '😊').medium(context),
@@ -156,4 +166,6 @@ class Commentary extends ConsumerWidget {
       ),
     );
   }
+
 }
+

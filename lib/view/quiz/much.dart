@@ -15,8 +15,8 @@ class Much extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Future.delayed(const Duration(microseconds: 5000000), () async {
-        Navigator.pushReplacementNamed(context, '/quiz_pop_up1');
+      await Future.delayed(const Duration(seconds:3), () async {
+        Navigator.pushNamed(context, '/quiz_pop_up1');
       });
     });
     DeviceSize size = DeviceSize(context);

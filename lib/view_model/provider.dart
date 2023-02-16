@@ -30,5 +30,6 @@ final matchInformationProvider=StateProvider<Map>((ref) =>{});
 final startTimeRef = FirebaseDatabase.instance.reference().child("startTime");
 final winnerProvider = Provider<Map>((ref) => Map());
 final nextQuestionTimeProvider = Provider<int>((ref) => 0);
-final startTimeProvider = StateProvider((ref) => 0);
+final startTimeProvider = StateProvider<int>((ref) => 0);
 final answerProvider = StateProvider<String>((ref) =>'');
+

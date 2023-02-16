@@ -7,6 +7,7 @@ class FireStoreLogic {
     var reference = _instance.collection(collection).doc(doc);
     final stream = reference
         .snapshots();
+
     return stream;
   }
 

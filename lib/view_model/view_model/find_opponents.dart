@@ -45,6 +45,8 @@ class FindOpponents {
       'waitingUsers',
       myInformation.uid,
     );
+
+    bool process=false;
    stream.timeout(const Duration(seconds: 30)).listen((newValue) async{
       bool exit = newValue.data()['matchedID'] == null ? false : true;
       if ((newValue.data() as Map<String, dynamic>).containsKey("matchedID")) {
@@ -54,8 +56,8 @@ class FindOpponents {
         var startTime=newValue.data()['startTime'];
         writeMyInformation();
         Stream<dynamic> streamMuchID = finalCheck();
-        print('kita');
-        streamMuchID.listen((newValue) async{
+        print('kitda');
+       var  _streamSubscription=streamMuchID.listen((newValue) async{
 
           if ((newValue.data() as Map<String, dynamic>)
               .containsKey('${_matchID}information')) {
@@ -66,9 +68,16 @@ class FindOpponents {
             _ref.read(matchInformationProvider.notifier).state={'matchID':_matchID,'roomID':_roomID};
             _ref.read(startTimeProvider.notifier).state=startTime;
             print('kita');
-             Navigator.pushNamed(context, '/much');
+            process=true;
+             Navigator.pushReplacementNamed(context, '/much');
           }
         });
+       print('kokoni');
+       if(process) {
+         _streamSubscription.cancel();
+       }
+
+
       }
     }, onError: (e) {
      if (e is TimeoutException) {
@@ -88,6 +97,7 @@ class FindOpponents {
       _roomID,
     );
     print(streamMuchID);
+
     return streamMuchID;
   }
 

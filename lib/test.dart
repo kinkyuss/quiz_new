@@ -49,6 +49,7 @@ class _TestState extends State<Test> {
 
   @override
   void initState() {
+    print('testのinitState');
 
     String answerForSelect = widget.answerForSelect;
     List similarAnswer = widget.similarAnswer;
@@ -76,6 +77,7 @@ class _TestState extends State<Test> {
       }
 
       void randomChar(kind) {
+
         for (var i = 0; i < 3; i++) {
           do {
             ranStr = kind[rnd.nextInt(kind.length)];
@@ -120,12 +122,14 @@ class _TestState extends State<Test> {
 
   @override
   void dispose() {
+    print('testがdisposeされました');
     _timer.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    print('testがbuildに入りました。');
 
     return Column(
       children: [
@@ -184,25 +188,26 @@ class _TestState extends State<Test> {
     String select = random[pressNumber][buttonNumber];
     return GestureDetector(
         onTap: () {
-          setState(() {
-            answer = answer + select;
-          });
 
+            answer = answer + select;
           if(select!=widget.answerForSelect[pressNumber]){
             pressNumber=0;
+
             Navigator.pop(context,false);
 
           }
           else if(answer==widget.answerForSelect){
             pressNumber=0;
-
             Navigator.pop(context,true);
           }
           else {
             pressNumber += 1;
             _countDown = 5;
             _millisecond = 0.00;
+            setState(() {
+            });
           }
+
         },
         child: Container(
           alignment: Alignment.center,
