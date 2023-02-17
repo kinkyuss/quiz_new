@@ -80,9 +80,9 @@ class FindOpponents {
 
       }
     }, onError: (e) {
-     if (e is TimeoutException) {
-       Navigator.pop(context);
-     }
+     // if (e is TimeoutException) {
+     //   Navigator.pop(context);
+     // }
    });
   }
 

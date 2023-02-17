@@ -1,45 +1,32 @@
-import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quiz_new/component.dart';
+import 'package:quiz_new/view_model/logic/show_test_number.logic.dart';
 import 'package:quiz_new/view_model/provider.dart';
 import 'package:quiz_new/view_model/view_model/quiz_pop_up.dart';
+
 import '../../model/device_data.dart';
 
-class Commentary extends ConsumerStatefulWidget {
+class Commentary extends ConsumerWidget {
   const Commentary({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<Commentary> createState() => _CommentaryState();
-}
+  Widget build(BuildContext context, ref) {
+    DeviceSize size = DeviceSize(context);
+    QuizPopUpViewModel quizPopUpViewModel =
+    QuizPopUpViewModel(context1: context);
+    quizPopUpViewModel.setRef(ref);
+    WidgetsBinding.instance.addPostFrameCallback((_)async {
 
-class _CommentaryState extends ConsumerState<Commentary> {
-  QuizPopUpViewModel model=QuizPopUpViewModel();
+      await Future.delayed(Duration(seconds: 5), ()async {
+        // await showTestNumber(context, 1, 3);
+      });
 
-  Timer ? timer;
-  @override
-  void initState() {
-
-    model.setRef(ref);
-    timer=Timer(Duration(seconds: 3), (){
+      await quizPopUpViewModel.commentaryToQuiz();
       Navigator.pushReplacementNamed(context, '/quiz_pop_up1');
     });
-
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
-
-   DeviceSize size=DeviceSize(context);
 
     return Material(
       child: SafeArea(
@@ -64,20 +51,22 @@ class _CommentaryState extends ConsumerState<Commentary> {
                         )),
                     height: size.height * 0.7,
                     width: double.infinity,
-                    child: Column(
+                    child: Consumer(builder: (context, ref, child) {
+                      quizPopUpViewModel.setRef(ref);
+                      return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Wrap(
                             crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
-                              OftenText(text: model.correct)
+                              OftenText(text: quizPopUpViewModel.correct)
                                   .medium(context),
                             ],
                           ),
                           SizedBox(
                             height: size.height * 0.1,
                           ),
-                          OftenText(text: model.commentary)
+                          OftenText(text: quizPopUpViewModel.commentary)
                               .small(context),
                           const Spacer(),
                           Row(
@@ -91,7 +80,8 @@ class _CommentaryState extends ConsumerState<Commentary> {
                             ],
                           ),
                         ],
-                      )),
+                      );
+                    })),
                 Spacer(),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -166,6 +156,4 @@ class _CommentaryState extends ConsumerState<Commentary> {
       ),
     );
   }
-
 }
-
