@@ -52,10 +52,10 @@ class QuizPopUpViewModel {
   get correct => _ref.read(questionsProvider.state).state.answer;
 
   get myInformation => {
-    'uid': _ref.read(myInformationProvider).uid,
-    'consecutive': _ref.read(myInformationProvider).consecutive,
-    'name': _ref.read(myInformationProvider).name
-  };
+        'uid': _ref.read(myInformationProvider).uid,
+        'consecutive': _ref.read(myInformationProvider).consecutive,
+        'name': _ref.read(myInformationProvider).name
+      };
 
   get opponentInformation => _ref.watch(opponentProvider.state).state;
 
@@ -79,13 +79,12 @@ class QuizPopUpViewModel {
   bool buttonTap = false;
   int time = 404;
 
-
-
-
   var streamSubscription;
+
+  bool countDownStart=false;
   firstProcess(
-      BuildContext context,
-      ) async {
+    BuildContext context,
+  ) async {
     print('入っている？');
     if (_ref.read(firstProvider.notifier).state) {
       _ref.read(firstProvider.notifier).state = false;
@@ -96,26 +95,25 @@ class QuizPopUpViewModel {
       await Future.delayed(Duration(microseconds: offset), () async {});
       questionSet(questionNumber);
       countDownTimer(context);
+       countDownStart=true;
 
       final stream = reference.snapshots();
 
       bool streamProcess = false;
       bool sentCorrect = false;
 
-
       streamSubscription = stream.listen((newValue) async {
         print('ajfdk');
         time = newValue.data()?[matchID] ?? 404;
-        if (time != 404 ) {
-          print('timeは404ではありません。');
-          _ref.read(cdStop.notifier).state=true;
-
+        if (time != 404) {
           opponent = true;
-          bool ? correct;
+          _ref.read(cdStop.notifier).state = true;
 
-          while(!sentCorrect){
+          bool? correct;
+
+          while (!sentCorrect) {
             if (newValue.data()?['correct'] != null) {
-              correct=newValue.data()?['correct'];
+              correct = newValue.data()?['correct'];
               print('はいった');
               sentCorrect = true;
               Navigator.pop(context);
@@ -134,8 +132,7 @@ class QuizPopUpViewModel {
             );
           }
 
-
-          bool showDialogCorrect=false;
+          bool showDialogCorrect = false;
           Timer threeTimer() {
             var timer = Timer(const Duration(seconds: 3), () {
               Navigator.pop(context);
@@ -143,43 +140,43 @@ class QuizPopUpViewModel {
             return timer;
           }
 
-
-          if (correct!=null&&correct) {
+          if (correct != null && correct) {
             print(correct);
             print('njfakdl');
             //timesを見直す;
-            bool showDialogAppear=false;
+            bool showDialogAppear = false;
 
-              var timer=threeTimer();
-              await showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (_) {
-                  showDialogAppear=true;
-                  return AlertDialog(
-                    title: Text(matchID + 'さんが会っていました。'),
-                    content: Text("This is the content"),
-                  );
-                },
-              );
-              if(newValue.data()?['nextStartTime']==null){
-                while(newValue.data()?['nextStartTime']==null){}
-              }
-              if(newValue.data()?['nextStartTime']!=null&&showDialogAppear){
-                showDialogCorrect=true;
-                timer.cancel();
-              }
+         var timer = Timer(const Duration(seconds: 1), () {
+              Navigator.pop(context);
+            });
+            await showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (_) {
+                showDialogAppear = true;
+                return AlertDialog(
+                  title: Text(matchID + 'さんが会っていました。'),
+                  content: Text("This is the content"),
+                );
+              },
+            );
+            if (newValue.data()?['nextStartTime'] == null) {
+              while (newValue.data()?['nextStartTime'] == null) {}
+            }
+            if (newValue.data()?['nextStartTime'] != null && showDialogAppear) {
+              showDialogCorrect = true;
+              timer.cancel();
+            }
 
-            if(showDialogCorrect) {
+            if (showDialogCorrect) {
               print('jfdlkfjn');
               int nextStartTime = newValue.data()!['nextStartTime'];
               print('kdsfsfsdfsadita');
-              toCommentary(nextStartTime, true,context);
+              toCommentary(nextStartTime, true, context);
               print('dabhsk');
               streamSubscription.cancel();
             }
-          }
-          else if (correct!=null&&!correct) {
+          } else if (correct != null && !correct) {
             bool showDialogAppear = false;
 
             var timer = threeTimer();
@@ -203,131 +200,130 @@ class QuizPopUpViewModel {
             }
 
             if (showDialogCorrect) {
+              opponent=false;
               streamProcess = true;
-              _ref
-                  .read(startTimeProvider.notifier)
-                  .state =
-              newValue.data()!['nextStartTime'];
-              _ref
-                  .read(cdStop.notifier)
-                  .state = false;
+              _ref.read(startTimeProvider.notifier).state =
+                  newValue.data()!['nextStartTime'];
+              _ref.read(cdStop.notifier).state = false;
               countDownTimer(context);
 
               streamSubscription.cancel();
             }
           }
-
-
         }
 
-          // else if (!correct) {
-          //
-          //   print('jbhskaf');
-          //   int times=0;
-          //    while(newValue.data()?['nextStartTime'] == null||times<3) {
-          //      print(newValue.data()?['nextStartTime'] );
-          //      print('jnnaf');
-          //      await showDialog(
-          //        context: context,
-          //        barrierDismissible: false,
-          //        builder: (_) {
-          //          return AlertDialog(
-          //            title: Text(matchID + 'さんが間違っていました。'),
-          //            content: Text("This is the content"),
-          //          );
-          //        },
-          //      );
-          //      times++;
-          //    }
-          //    Navigator.pop(context);
-          //
-          //      streamProcess = true;
-          //      _ref.read(startTimeProvider.notifier).state =
-          //      newValue.data()!['nextStartTime'];
-          //      cdStop = false;
-          //      countDownTimer(context);
-          //      return ;
-          //    }
-        }
-      );}
+        // else if (!correct) {
+        //
+        //   print('jbhskaf');
+        //   int times=0;
+        //    while(newValue.data()?['nextStartTime'] == null||times<3) {
+        //      print(newValue.data()?['nextStartTime'] );
+        //      print('jnnaf');
+        //      await showDialog(
+        //        context: context,
+        //        barrierDismissible: false,
+        //        builder: (_) {
+        //          return AlertDialog(
+        //            title: Text(matchID + 'さんが間違っていました。'),
+        //            content: Text("This is the content"),
+        //          );
+        //        },
+        //      );
+        //      times++;
+        //    }
+        //    Navigator.pop(context);
+        //
+        //      streamProcess = true;
+        //      _ref.read(startTimeProvider.notifier).state =
+        //      newValue.data()!['nextStartTime'];
+        //      cdStop = false;
+        //      countDownTimer(context);
+        //      return ;
+        //    }
+      });
+    }
   }
 
   buttonPress(context) async {
-    _ref.read(cdStop.notifier).state=true;
-
-    print('if文に入りました');
-    await reference.set(
-        {myInformation['uid']: _ref.read(countDownTimerProvider.state).state});
-
-    print('さらにif文に入りました');
+    if (!buttonTap&&!opponent&&countDownStart) {
 
 
-    print('cdStop=');
-    print(cdStop);
-    Timer threeTimer() {
-      var timer = Timer(const Duration(seconds: 3), () {
-        Navigator.pop(context);
+      _ref.read(cdStop.notifier).state = true;
+
+      print('if文に入りました');
+      await reference.set({
+        myInformation['uid']: _ref.read(countDownTimerProvider.state).state
       });
-      return timer;
-    }
+      buttonTap = true;
+      print('さらにif文に入りました');
 
-    print('3分のタイマーが始まりました。');
-    print('cdStop==');
-
-    await showDialog(
-        context: context,
-        builder: (context) {
-          return Test(
-              similarAnswer: ['エヴェレスト'],
-              answerForSelect: 'エベレスト',
-              correct: correct,
-              model: this);
-        }).then((value) async {
-      print('showDialogが閉じられました');
-      if (value == true) {
-        print('cdStop=');
-        print(cdStop);
-        print('正解に入りました。');
-        var timer = threeTimer();
-        await correctOrWrong(context, '正解!!!');
-        if (timer != null && timer!.isActive) {
-          timer!.cancel();
-        }
-
-        var myTime = await NTP.now();
-        await reference.update({
-          'correct': true,
-          'nextStartTime': myTime.microsecondsSinceEpoch + 12000000,
-        });
-        print('正解2');
-        toCommentary(myTime.microsecondsSinceEpoch + 12000000, true,context);
-        print('正解が終わりました。');
-      } else {
-        print('不正解に入りました、');
-
-        var timer =Timer(const Duration(seconds: 5), () {
+      print('cdStop=');
+      print(cdStop);
+      Timer threeTimer() {
+        var timer = Timer(const Duration(seconds: 3), () {
           Navigator.pop(context);
         });
-        await correctOrWrong(context, '不正解');
-        timer.cancel();
-        var myTime = await NTP.now();
-        int nextStartTime = myTime.millisecondsSinceEpoch +
-            double.parse(countDownNumber).floor() * 1000000 +
-            9000000;
-        _ref.read(startTimeProvider.notifier).state = nextStartTime;
-        await reference.update({
-          'correct': false,
-          'nextStartTime': nextStartTime,
-        });
-
-        print('不正解でpopされｍした。');
-        _ref.read(cdStop.notifier).state=false;
-        countDownTimer(context);
-        _soundLogicSub.audioResume();
-        print('不正解が終わりました。');
+        return timer;
       }
-    });
-    buttonTap = true;
+
+      print('3分のタイマーが始まりました。');
+      print('cdStop==');
+
+      await showDialog(
+          context: context,
+          builder: (context) {
+            return Test(
+                similarAnswer: ['まつむら'],
+                answerForSelect: 'まつむら',
+                correct: correct,
+                model: this);
+          }).then((value) async {
+        print('showDialogが閉じられました');
+        if (value == true) {
+          print('cdStop=');
+          print(cdStop);
+          print('正解に入りました。');
+          var timer = threeTimer();
+          await correctOrWrong(context, '正解!!!');
+          if (timer != null && timer!.isActive) {
+            timer!.cancel();
+          }
+
+          var myTime = await NTP.now();
+          await reference.update({
+            'correct': true,
+            'nextStartTime': myTime.microsecondsSinceEpoch + 12000000,
+          });
+          print('正解2');
+          toCommentary(myTime.microsecondsSinceEpoch + 12000000, true, context);
+          print('正解が終わりました。');
+        } else {
+          print('不正解に入りました、');
+          var myTime = await NTP.now();
+          int nextStartTime = myTime.millisecondsSinceEpoch +
+              double.parse(countDownNumber).floor() * 1000000 +
+              10000000;
+          await reference.update({
+            'correct': false,
+            'nextStartTime': nextStartTime,
+          });
+          _ref.read(startTimeProvider.notifier).state = nextStartTime;
+
+          var timer = Timer(const Duration(seconds: 3), () {
+            Navigator.pop(context);
+          });
+          await correctOrWrong(context, '不正解');
+          timer.cancel();
+
+
+          print('不正解でpopされｍした。');
+          _ref.read(cdStop.notifier).state = false;
+          countDownTimer(context);
+          _soundLogicSub.audioResume();
+          print('不正解が終わりました。');
+        }
+      });
+    }
   }
 
   Future<void> questionSet(int index) async {
@@ -341,14 +337,14 @@ class QuizPopUpViewModel {
   }
 
   void countDownTimer(
-      context,
-      ) async {
+    context,
+  ) async {
     int cdNumberFirst = _ref.read(countDownTimerProvider.notifier).state;
 
     int store = cdNumberFirst;
 
     for (int i = 0; i < cdNumberFirst; i++) {
-      if ( _ref.read(cdStop.notifier).state) {
+      if (_ref.read(cdStop.notifier).state) {
         _soundLogicSub.audioStop();
         _ref.read(countDownTimerProvider.notifier).state = 100 - i;
         break;
@@ -363,7 +359,7 @@ class QuizPopUpViewModel {
       if (i == 30 && store == 100) {
         _soundLogicSub.audioPlay('assets/sounds/新カウントダウン.mp3');
       }
-      if ( _ref.read(cdStop.notifier).state) {
+      if (_ref.read(cdStop.notifier).state) {
         _soundLogicSub.audioStop();
         _ref.read(countDownTimerProvider.notifier).state = 100 - i;
         break;
@@ -371,43 +367,41 @@ class QuizPopUpViewModel {
       if (i == 88 && store == 100) {
         _soundLogicSub.audioPlay('assets/sounds/ピー.mp3');
       }
-      if ( _ref.read(cdStop.notifier).state) {
+      if (_ref.read(cdStop.notifier).state) {
         _soundLogicSub.audioStop();
         _ref.read(countDownTimerProvider.notifier).state = 100 - i;
         break;
       }
-
     }
     if (buttonTap) {
       print('無事buttonTapはtrueだよ！');
-      toCommentary(0, false,context);
-    }
-    else if (!_ref.read(cdStop.notifier).state
-    ) {
+      toCommentary(0, false, context);
+    } else if (!_ref.read(cdStop.notifier).state) {
       print('buttonTapはtrueでない');
       int beforeStartTime = _ref.read(startTimeProvider.notifier).state;
 
-      toCommentary(beforeStartTime + 20000000, true,context);
+      toCommentary(beforeStartTime + 20000000, true, context);
     }
   }
 
-
-   commentaryToQuiz(){
+  commentaryToQuiz() {
     _ref.read(questionNumberProvider.notifier).update((state) => state + 1);
-    _ref.read(countDownTimerProvider.notifier).state= 100;
+    _ref.read(countDownTimerProvider.notifier).state = 100;
     _ref.read(cdStop.notifier).state = false;
     _ref.read(questionsProvider.notifier).state = _ref
         .read(questionsProvider.notifier)
         .state
         .copyWith(test: '第$questionNumber問');
   }
-  void toCommentary(int nextStartTime, bool change,BuildContext context) async{
-    _ref.read(firstProvider.notifier).state=true;
+
+  void toCommentary(
+      int nextStartTime, bool change, BuildContext context) async {
+    _ref.read(firstProvider.notifier).state = true;
 
     if (change) {
-      _ref.read(startTimeProvider.notifier).state =  nextStartTime;
+      _ref.read(startTimeProvider.notifier).state = nextStartTime;
     }
-    await  Navigator.pushReplacementNamed(context, '/commentary');
+    await Navigator.pushReplacementNamed(context, '/commentary');
   }
 
   Future<void> correctOrWrong(context, title) async {

@@ -81,7 +81,7 @@ class _TestState extends State<Test> {
         for (var i = 0; i < 3; i++) {
           do {
             ranStr = kind[rnd.nextInt(kind.length)];
-          } while (ranStr == str || similar(ranStr));
+          } while (ranStr == str || similar(ranStr)||randomIndex.contains(ranStr));
 
           randomIndex.add(ranStr);
         }
@@ -113,7 +113,7 @@ class _TestState extends State<Test> {
         }
       });
       if (_countDown == 0) {
-        Navigator.pop(context, true);
+        Navigator.pop(context, false);
         _timer.cancel();
       }
     });
