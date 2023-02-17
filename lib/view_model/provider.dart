@@ -32,4 +32,4 @@ final winnerProvider = Provider<Map>((ref) => Map());
 final nextQuestionTimeProvider = Provider<int>((ref) => 0);
 final startTimeProvider = StateProvider<int>((ref) => 0);
 final answerProvider = StateProvider<String>((ref) =>'');
-
+final buttonTimerProvider = StateProvider<String>((ref) =>'');
