@@ -36,6 +36,7 @@ class FindOpponents {
         .collection('waitingUsers')
         .doc(myInformation.uid)
         .set({'status': 'waiting', 'updateAt': _myTime.microsecondsSinceEpoch});
+ print('fbhsdfh');
   }
 
   findStart(context) async {
@@ -58,10 +59,9 @@ class FindOpponents {
         Stream<dynamic> streamMuchID = finalCheck();
         print('kitda');
        var  _streamSubscription=streamMuchID.listen((newValue) async{
-
           if ((newValue.data() as Map<String, dynamic>)
               .containsKey('${_matchID}information')) {
-            print('haitta');
+            print('hdddaitta');
             Map opponent = newValue.data()!['${_matchID}information'];
             print(opponent);
             _ref.read(opponentProvider.notifier).state = opponent;
@@ -73,9 +73,9 @@ class FindOpponents {
           }
         });
        print('kokoni');
-       if(process) {
-         _streamSubscription.cancel();
-       }
+       // if(process) {
+       //   _streamSubscription.cancel();
+       // }
 
 
       }

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ntp/ntp.dart';
+import 'package:quiz_new/view_model/provider.dart';
 
 import '../../model/questions_relation/questions.dart';
 import '../../test.dart';
@@ -302,7 +303,7 @@ class QuizPopUpViewModel {
           var myTime = await NTP.now();
           int nextStartTime = myTime.millisecondsSinceEpoch +
               double.parse(countDownNumber).floor() * 1000000 +
-              10000000;
+              13000000;
           await reference.update({
             'correct': false,
             'nextStartTime': nextStartTime,
@@ -346,7 +347,6 @@ class QuizPopUpViewModel {
     for (int i = 0; i < cdNumberFirst; i++) {
       if (_ref.read(cdStop.notifier).state) {
         _soundLogicSub.audioStop();
-        _ref.read(countDownTimerProvider.notifier).state = 100 - i;
         break;
       }
 
@@ -361,7 +361,6 @@ class QuizPopUpViewModel {
       }
       if (_ref.read(cdStop.notifier).state) {
         _soundLogicSub.audioStop();
-        _ref.read(countDownTimerProvider.notifier).state = 100 - i;
         break;
       }
       if (i == 88 && store == 100) {
@@ -369,14 +368,15 @@ class QuizPopUpViewModel {
       }
       if (_ref.read(cdStop.notifier).state) {
         _soundLogicSub.audioStop();
-        _ref.read(countDownTimerProvider.notifier).state = 100 - i;
         break;
       }
     }
-    if (buttonTap) {
+    //間違ってしまって時間が過ぎた場合、相手と時間の差の調節はしているから
+
+    if (buttonTap&&_ref.read(countDownTimerProvider.notifier).state==0) {
       print('無事buttonTapはtrueだよ！');
       toCommentary(0, false, context);
-    } else if (!_ref.read(cdStop.notifier).state) {
+    } else if (!_ref.read(cdStop.notifier).state&&_ref.read(countDownTimerProvider.notifier).state==0) {
       print('buttonTapはtrueでない');
       int beforeStartTime = _ref.read(startTimeProvider.notifier).state;
 
@@ -392,6 +392,9 @@ class QuizPopUpViewModel {
         .read(questionsProvider.notifier)
         .state
         .copyWith(test: '第$questionNumber問');
+    print('a');
+    print({_ref.read(questionNumberProvider.notifier).state});
+
   }
 
   void toCommentary(
@@ -401,6 +404,8 @@ class QuizPopUpViewModel {
     if (change) {
       _ref.read(startTimeProvider.notifier).state = nextStartTime;
     }
+    print('ds');
+    print({_ref.read(questionNumberProvider.notifier).state});
     await Navigator.pushReplacementNamed(context, '/commentary');
   }
 
