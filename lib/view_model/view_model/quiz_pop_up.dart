@@ -10,7 +10,6 @@ import '../../model/questions_relation/questions.dart';
 import '../../test.dart';
 import '../logic/count_down_logic.dart';
 import '../logic/sound_logic.dart';
-import '../provider.dart';
 
 class QuizPopUpViewModel {
   QuizPopUpViewModel({
@@ -79,10 +78,12 @@ class QuizPopUpViewModel {
   var opponent = false;
   bool buttonTap = false;
   int time = 404;
+  bool opponentWrong = false;
 
   var streamSubscription;
 
-  bool countDownStart=false;
+  bool countDownStart = false;
+
   firstProcess(
     BuildContext context,
   ) async {
@@ -96,7 +97,7 @@ class QuizPopUpViewModel {
       await Future.delayed(Duration(microseconds: offset), () async {});
       questionSet(questionNumber);
       countDownTimer(context);
-       countDownStart=true;
+      countDownStart = true;
 
       final stream = reference.snapshots();
 
@@ -113,8 +114,8 @@ class QuizPopUpViewModel {
           bool? correct;
 
           while (!sentCorrect) {
-            if (newValue.data()?['correct'] != null) {
-              correct = newValue.data()?['correct'];
+            if (newValue.data()?[matchID + 'correct'] != null) {
+              correct = newValue.data()?[matchID + 'correct'];
               print('はいった');
               sentCorrect = true;
               Navigator.pop(context);
@@ -147,7 +148,7 @@ class QuizPopUpViewModel {
             //timesを見直す;
             bool showDialogAppear = false;
 
-         var timer = Timer(const Duration(seconds: 1), () {
+            var timer = Timer(const Duration(seconds: 1), () {
               Navigator.pop(context);
             });
             await showDialog(
@@ -201,54 +202,32 @@ class QuizPopUpViewModel {
             }
 
             if (showDialogCorrect) {
-              opponent=false;
-              streamProcess = true;
               _ref.read(startTimeProvider.notifier).state =
                   newValue.data()!['nextStartTime'];
-              _ref.read(cdStop.notifier).state = false;
-              countDownTimer(context);
-
-              streamSubscription.cancel();
+              if (buttonTap) {
+                toCommentary(newValue.data()!['nextStartTime'], false, context);
+                streamSubscription.cancel();
+                return ;
+              }
+             else {
+                _ref
+                    .read(cdStop.notifier)
+                    .state = false;
+                streamProcess = true;
+                countDownTimer(context);
+                opponentWrong = true;
+                opponent = false;
+                streamSubscription.cancel();
+              }
             }
           }
         }
-
-        // else if (!correct) {
-        //
-        //   print('jbhskaf');
-        //   int times=0;
-        //    while(newValue.data()?['nextStartTime'] == null||times<3) {
-        //      print(newValue.data()?['nextStartTime'] );
-        //      print('jnnaf');
-        //      await showDialog(
-        //        context: context,
-        //        barrierDismissible: false,
-        //        builder: (_) {
-        //          return AlertDialog(
-        //            title: Text(matchID + 'さんが間違っていました。'),
-        //            content: Text("This is the content"),
-        //          );
-        //        },
-        //      );
-        //      times++;
-        //    }
-        //    Navigator.pop(context);
-        //
-        //      streamProcess = true;
-        //      _ref.read(startTimeProvider.notifier).state =
-        //      newValue.data()!['nextStartTime'];
-        //      cdStop = false;
-        //      countDownTimer(context);
-        //      return ;
-        //    }
       });
     }
   }
 
   buttonPress(context) async {
-    if (!buttonTap&&!opponent&&countDownStart) {
-
-
+    if (!buttonTap && !opponent && countDownStart) {
       _ref.read(cdStop.notifier).state = true;
 
       print('if文に入りました');
@@ -292,23 +271,27 @@ class QuizPopUpViewModel {
 
           var myTime = await NTP.now();
           await reference.update({
-            'correct': true,
+            myInformation['uid'] + 'correct': true,
             'nextStartTime': myTime.microsecondsSinceEpoch + 12000000,
           });
           print('正解2');
           toCommentary(myTime.microsecondsSinceEpoch + 12000000, true, context);
           print('正解が終わりました。');
         } else {
-          print('不正解に入りました、');
           var myTime = await NTP.now();
-          int nextStartTime = myTime.millisecondsSinceEpoch +
-              double.parse(countDownNumber).floor() * 1000000 +
-              13000000;
-          await reference.update({
-            'correct': false,
-            'nextStartTime': nextStartTime,
-          });
-          _ref.read(startTimeProvider.notifier).state = nextStartTime;
+          late int nextStartTime;
+          print('不正解に入りました、');
+          if (!opponentWrong) {
+            nextStartTime = myTime.millisecondsSinceEpoch +
+                double.parse(countDownNumber).floor() * 1000000 +
+                13000000;
+
+            await reference.update({
+              myInformation['uid'] + 'correct': false,
+              'nextStartTime': nextStartTime,
+            });
+            _ref.read(startTimeProvider.notifier).state = nextStartTime;
+          }
 
           var timer = Timer(const Duration(seconds: 3), () {
             Navigator.pop(context);
@@ -316,6 +299,17 @@ class QuizPopUpViewModel {
           await correctOrWrong(context, '不正解');
           timer.cancel();
 
+          if (opponentWrong) {
+            nextStartTime = myTime.millisecondsSinceEpoch + 10000000;
+            await reference.update({
+              myInformation['uid'] + 'correct': false,
+              'nextStartTime': nextStartTime,
+            });
+            _ref.read(startTimeProvider.notifier).state = nextStartTime;
+
+            toCommentary(nextStartTime, false, context);
+            return;
+          }
 
           print('不正解でpopされｍした。');
           _ref.read(cdStop.notifier).state = false;
@@ -373,10 +367,11 @@ class QuizPopUpViewModel {
     }
     //間違ってしまって時間が過ぎた場合、相手と時間の差の調節はしているから
 
-    if (buttonTap&&_ref.read(countDownTimerProvider.notifier).state==0) {
+    if (buttonTap && _ref.read(countDownTimerProvider.notifier).state == 0) {
       print('無事buttonTapはtrueだよ！');
       toCommentary(0, false, context);
-    } else if (!_ref.read(cdStop.notifier).state&&_ref.read(countDownTimerProvider.notifier).state==0) {
+    } else if (!_ref.read(cdStop.notifier).state &&
+        _ref.read(countDownTimerProvider.notifier).state == 0) {
       print('buttonTapはtrueでない');
       int beforeStartTime = _ref.read(startTimeProvider.notifier).state;
 
@@ -394,7 +389,6 @@ class QuizPopUpViewModel {
         .copyWith(test: '第$questionNumber問');
     print('a');
     print({_ref.read(questionNumberProvider.notifier).state});
-
   }
 
   void toCommentary(
