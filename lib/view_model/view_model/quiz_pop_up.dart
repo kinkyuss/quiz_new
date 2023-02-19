@@ -300,7 +300,7 @@ class QuizPopUpViewModel {
           timer.cancel();
 
           if (opponentWrong) {
-            nextStartTime = myTime.millisecondsSinceEpoch + 10000000;
+            nextStartTime = myTime.millisecondsSinceEpoch + 15000000;
             await reference.update({
               myInformation['uid'] + 'correct': false,
               'nextStartTime': nextStartTime,
