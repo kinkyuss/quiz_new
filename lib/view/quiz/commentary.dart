@@ -59,7 +59,7 @@ class Commentary extends ConsumerWidget {
                           Wrap(
                             crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
-                              OftenText(text: quizPopUpViewModel.correct)
+                              OftenText(text: quizPopUpViewModel.answer)
                                   .medium(context),
                             ],
                           ),

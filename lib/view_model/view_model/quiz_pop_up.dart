@@ -6,9 +6,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ntp/ntp.dart';
 import 'package:quiz_new/view_model/provider.dart';
 
-import '../../model/questions_relation/questions.dart';
+import '../../model/questions_relation/problem_set.dart';
 import '../../test.dart';
-import '../logic/count_down_logic.dart';
 import '../logic/sound_logic.dart';
 
 class QuizPopUpViewModel {
@@ -20,36 +19,58 @@ class QuizPopUpViewModel {
   final BuildContext? context;
   final BuildContext? context1;
 
-  final CountDownLogic _countDownLogic = CountDownLogic();
   late WidgetRef _ref;
 
-  final SoundLogic _soundLogicMain = SoundLogic();
   final SoundLogic _soundLogicSub = SoundLogic();
 
   void setRef(WidgetRef ref) {
     _ref = ref;
   }
 
-  late final List<String> _testList =
-      _ref.read(questionsListProvider.state).state.test;
+  //Providerを変数に格納する。
 
+  //このバトルで使う問題、解説、解答などの集まり。
+  late final List<String> _questionList =
+      _ref.read(problemSetsListProvider.notifier).state.question;
   late final List<String> _answerList =
-      _ref.read(questionsListProvider.state).state.answer;
+      _ref.read(problemSetsListProvider.notifier).state.answer;
 
   late final List<String> _commentaryList =
-      _ref.read(questionsListProvider.state).state.commentary;
+      _ref.read(problemSetsListProvider.notifier).state.commentary;
 
   late final List<String> _answerForSelect =
-      _ref.read(questionsListProvider.state).state.answerForSelect;
+      _ref.read(problemSetsListProvider.notifier).state.answerForSelect;
 
   late final List<List<String>> _similarAnswer =
-      _ref.read(questionsListProvider.state).state.similarAnswer;
+      _ref.read(problemSetsListProvider.notifier).state.similarAnswer;
 
-  get commentary => _ref.read(questionsProvider.state).state.commentary;
+  //このバトル全体での情報
+  late final String matchID =
+      _ref.read(matchInformationProvider.notifier).state['matchID'];
 
-  get test => _ref.watch(questionsProvider.state).state.test;
+  late final String roomID =
+      _ref.read(matchInformationProvider.notifier).state['roomID'];
 
-  get correct => _ref.read(questionsProvider.state).state.answer;
+  //このバトルの中の問題1つに対する情報
+  late final int questionNumber =
+      _ref.watch(questionNumberProvider.state).state;
+
+  get countDownNumber =>
+      '${(_ref.watch(countDownTimerProvider.state).state / 10)}';
+
+  late DocumentReference<Map<String, dynamic>> reference = FirebaseFirestore
+      .instance
+      .collection('rooms')
+      .doc(roomID)
+      .collection('time')
+      .doc('quiz$questionNumber');
+
+  //問題解答解説
+  get test => _ref.watch(problemSetProvider.state).state.question;
+
+  get answer => _ref.read(problemSetProvider.notifier).state.answer;
+
+  get commentary => _ref.read(problemSetProvider.notifier).state.commentary;
 
   get myInformation => {
         'uid': _ref.read(myInformationProvider).uid,
@@ -57,168 +78,70 @@ class QuizPopUpViewModel {
         'name': _ref.read(myInformationProvider).name
       };
 
-  get opponentInformation => _ref.watch(opponentProvider.state).state;
-
-  get countDownNumber =>
-      '${(_ref.watch(countDownTimerProvider.state).state / 10)}';
-
-  get first => _ref.read(firstProvider.state).state;
-
-  get roomID => _ref.read(matchInformationProvider.state).state['roomID'];
-
-  get matchID => _ref.read(matchInformationProvider.state).state['matchID'];
-
-  get questionNumber => _ref.watch(questionNumberProvider.state).state;
-  late DocumentReference<Map<String, dynamic>> reference = FirebaseFirestore
-      .instance
-      .collection('rooms')
-      .doc(roomID)
-      .collection('time')
-      .doc('quiz$questionNumber');
-  var opponent = false;
+  //ボタンを押せる押せないなど、細かな条件文器に使用している。
+  bool opponent = false;
   bool buttonTap = false;
-  int time = 404;
-  bool opponentWrong = false;
-
-  var streamSubscription;
-
+  bool? opponentCorrectOrWrong;
   bool countDownStart = false;
+  int time = 404;
+
+  //外に出しておく必要があったため
+  late StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>
+      streamSubscription;
+  late DocumentSnapshot<Map<String, dynamic>> newValueOut;
 
   firstProcess(
     BuildContext context,
   ) async {
-    print('入っている？');
     if (_ref.read(firstProvider.notifier).state) {
       _ref.read(firstProvider.notifier).state = false;
+
+      //相手と決めた時間になるまで待機する。
       var myTime = await NTP.now();
       int startTime = _ref.read(startTimeProvider.notifier).state;
       int offset = startTime - myTime.microsecondsSinceEpoch;
-      print(offset);
       await Future.delayed(Duration(microseconds: offset), () async {});
+
+      //第n問の問題解説などをセットする。
       questionSet(questionNumber);
-      countDownTimer(context);
+
+      countDownTimer();
       countDownStart = true;
 
+      //相手がボタンを押したかを監視する。
       final stream = reference.snapshots();
-
-      bool streamProcess = false;
-      bool sentCorrect = false;
-
+      bool sentCorrectOrWrong = false;
       streamSubscription = stream.listen((newValue) async {
-        print('ajfdk');
+        newValueOut = newValue;
         time = newValue.data()?[matchID] ?? 404;
         if (time != 404) {
           opponent = true;
           _ref.read(cdStop.notifier).state = true;
 
-          bool? correct;
-
-          while (!sentCorrect) {
-            if (newValue.data()?[matchID + 'correct'] != null) {
-              correct = newValue.data()?[matchID + 'correct'];
-              print('はいった');
-              sentCorrect = true;
+          while (!sentCorrectOrWrong) {
+            if (newValue.data()?['${matchID}correct'] != null) {
+              opponentCorrectOrWrong = newValue.data()?['${matchID}correct'];
+              sentCorrectOrWrong = true;
               Navigator.pop(context);
               break;
             }
-            print('jafj');
             await showDialog(
               context: context,
               barrierDismissible: false,
               builder: (_) {
                 return AlertDialog(
-                  title: Text(matchID + 'さんが解答中です。'),
-                  content: Text("This is the content"),
+                  title: Text('$matchIDさんが解答中です。'),
                 );
               },
             );
           }
 
-          bool showDialogCorrect = false;
-          Timer threeTimer() {
-            var timer = Timer(const Duration(seconds: 3), () {
-              Navigator.pop(context);
-            });
-            return timer;
-          }
-
-          if (correct != null && correct) {
-            print(correct);
-            print('njfakdl');
-            //timesを見直す;
-            bool showDialogAppear = false;
-
-            var timer = Timer(const Duration(seconds: 1), () {
-              Navigator.pop(context);
-            });
-            await showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (_) {
-                showDialogAppear = true;
-                return AlertDialog(
-                  title: Text(matchID + 'さんが会っていました。'),
-                  content: Text("This is the content"),
-                );
-              },
-            );
-            if (newValue.data()?['nextStartTime'] == null) {
-              while (newValue.data()?['nextStartTime'] == null) {}
-            }
-            if (newValue.data()?['nextStartTime'] != null && showDialogAppear) {
-              showDialogCorrect = true;
-              timer.cancel();
-            }
-
-            if (showDialogCorrect) {
-              print('jfdlkfjn');
-              int nextStartTime = newValue.data()!['nextStartTime'];
-              print('kdsfsfsdfsadita');
-              toCommentary(nextStartTime, true, context);
-              print('dabhsk');
-              streamSubscription.cancel();
-            }
-          } else if (correct != null && !correct) {
-            bool showDialogAppear = false;
-
-            var timer = threeTimer();
-            await showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (_) {
-                showDialogAppear = true;
-                return AlertDialog(
-                  title: Text(matchID + 'さんが間違っていました。'),
-                  content: Text("This is the content"),
-                );
-              },
-            );
-            if (newValue.data()?['nextStartTime'] == null) {
-              while (newValue.data()?['nextStartTime'] == null) {}
-            }
-            if (newValue.data()?['nextStartTime'] != null && showDialogAppear) {
-              showDialogCorrect = true;
-              timer.cancel();
-            }
-
-            if (showDialogCorrect) {
-              _ref.read(startTimeProvider.notifier).state =
-                  newValue.data()!['nextStartTime'];
-              if (buttonTap) {
-                toCommentary(newValue.data()!['nextStartTime'], false, context);
-                streamSubscription.cancel();
-                return ;
-              }
-             else {
-                _ref
-                    .read(cdStop.notifier)
-                    .state = false;
-                streamProcess = true;
-                countDownTimer(context);
-                opponentWrong = true;
-                opponent = false;
-                streamSubscription.cancel();
-              }
+          if (opponentCorrectOrWrong != null) {
+            //相手が正誤が分かった時のそれぞれの処理
+            if (opponentCorrectOrWrong!) {
+              correctWrongShowDialog(true);
+            } else {
+              correctWrongShowDialog(false);
             }
           }
         }
@@ -226,19 +149,18 @@ class QuizPopUpViewModel {
     }
   }
 
+  //ボタンが押された時に処理をする関数。
   buttonPress(context) async {
     if (!buttonTap && !opponent && countDownStart) {
       _ref.read(cdStop.notifier).state = true;
-
-      print('if文に入りました');
+      //自分の時間を設定する。
       await reference.set({
-        myInformation['uid']: _ref.read(countDownTimerProvider.state).state
+        myInformation['uid']: _ref.read(countDownTimerProvider.notifier).state
       });
-      buttonTap = true;
-      print('さらにif文に入りました');
 
-      print('cdStop=');
-      print(cdStop);
+      //自分がボタンを押した記録を残しておく。
+      buttonTap = true;
+
       Timer threeTimer() {
         var timer = Timer(const Duration(seconds: 3), () {
           Navigator.pop(context);
@@ -246,46 +168,31 @@ class QuizPopUpViewModel {
         return timer;
       }
 
-      print('3分のタイマーが始まりました。');
-      print('cdStop==');
-
       await showDialog(
           context: context,
           builder: (context) {
             return Test(
-                similarAnswer: ['まつむら'],
-                answerForSelect: 'まつむら',
-                correct: correct,
-                model: this);
+                similarAnswer: ['まつむら'], answerForSelect: 'まつむら', model: this);
           }).then((value) async {
-        print('showDialogが閉じられました');
         if (value == true) {
-          print('cdStop=');
-          print(cdStop);
-          print('正解に入りました。');
           var timer = threeTimer();
           await correctOrWrong(context, '正解!!!');
-          if (timer != null && timer!.isActive) {
-            timer!.cancel();
-          }
+          timer.cancel();
 
           var myTime = await NTP.now();
           await reference.update({
             myInformation['uid'] + 'correct': true,
             'nextStartTime': myTime.microsecondsSinceEpoch + 12000000,
           });
-          print('正解2');
-          toCommentary(myTime.microsecondsSinceEpoch + 12000000, true, context);
-          print('正解が終わりました。');
-        } else {
-          var myTime = await NTP.now();
-          late int nextStartTime;
-          print('不正解に入りました、');
-          if (!opponentWrong) {
-            nextStartTime = myTime.millisecondsSinceEpoch +
-                double.parse(countDownNumber).floor() * 1000000 +
-                13000000;
 
+          toCommentary(myTime.microsecondsSinceEpoch + 12000000, true);
+        } else {
+          //相手が間違っていなかった場合は、自分の残り時間も考慮して次の問題の時間を設定する。
+          if (opponentCorrectOrWrong == null) {
+            var myTime = await NTP.now();
+            int nextStartTime = myTime.microsecondsSinceEpoch +
+                double.parse(countDownNumber).floor() * 1000000 +
+                15000000;
             await reference.update({
               myInformation['uid'] + 'correct': false,
               'nextStartTime': nextStartTime,
@@ -293,37 +200,38 @@ class QuizPopUpViewModel {
             _ref.read(startTimeProvider.notifier).state = nextStartTime;
           }
 
-          var timer = Timer(const Duration(seconds: 3), () {
+          //共通で、「不正解」のダイアログは出す必要がある。
+          var timer = Timer(const Duration(seconds: 1), () {
             Navigator.pop(context);
           });
           await correctOrWrong(context, '不正解');
           timer.cancel();
 
-          if (opponentWrong) {
-            nextStartTime = myTime.millisecondsSinceEpoch + 15000000;
+          //相手が間違っていない場合は、そのままカウントダウンを再開する。(相手が答えられる可能性があるため。)
+          if (opponentCorrectOrWrong == null) {
+            _ref.read(cdStop.notifier).state = false;
+            countDownTimer();
+            _soundLogicSub.audioResume();
+          }
+          //相手も間違っていた場合は画面遷移をする。(待ち続ける必要がないため。)
+          else {
+            var myTime = await NTP.now();
+            int nextStartTime = myTime.microsecondsSinceEpoch + 13000000;
             await reference.update({
               myInformation['uid'] + 'correct': false,
               'nextStartTime': nextStartTime,
             });
-            _ref.read(startTimeProvider.notifier).state = nextStartTime;
-
-            toCommentary(nextStartTime, false, context);
+            toCommentary(nextStartTime, true);
             return;
           }
-
-          print('不正解でpopされｍした。');
-          _ref.read(cdStop.notifier).state = false;
-          countDownTimer(context);
-          _soundLogicSub.audioResume();
-          print('不正解が終わりました。');
         }
       });
     }
   }
 
   Future<void> questionSet(int index) async {
-    _ref.read(questionsProvider.notifier).state = Questions(
-      test: _testList[index],
+    _ref.read(problemSetProvider.notifier).state = ProblemSet(
+      question: _questionList[index],
       answer: _answerList[index],
       commentary: _commentaryList[index],
       similarAnswer: _similarAnswer[index],
@@ -331,9 +239,9 @@ class QuizPopUpViewModel {
     );
   }
 
-  void countDownTimer(
-    context,
-  ) async {
+  //カウントダウンを開始する関数。
+  //止めることもできる.0になったら解説ページへ移動
+  void countDownTimer() async {
     int cdNumberFirst = _ref.read(countDownTimerProvider.notifier).state;
 
     int store = cdNumberFirst;
@@ -343,7 +251,6 @@ class QuizPopUpViewModel {
         _soundLogicSub.audioStop();
         break;
       }
-
       int cdNumber = _ref.read(countDownTimerProvider.notifier).state;
       await Future.delayed(const Duration(milliseconds: 100), () {});
 
@@ -365,17 +272,15 @@ class QuizPopUpViewModel {
         break;
       }
     }
-    //間違ってしまって時間が過ぎた場合、相手と時間の差の調節はしているから
 
-    if (buttonTap && _ref.read(countDownTimerProvider.notifier).state == 0) {
-      print('無事buttonTapはtrueだよ！');
-      toCommentary(0, false, context);
+    //間違ってしまって時間が過ぎた場合、相手と時間の差の調節はしているから
+    if ((buttonTap || opponentCorrectOrWrong != null) &&
+        _ref.read(countDownTimerProvider.notifier).state == 0) {
+      toCommentary(0, false);
     } else if (!_ref.read(cdStop.notifier).state &&
         _ref.read(countDownTimerProvider.notifier).state == 0) {
-      print('buttonTapはtrueでない');
       int beforeStartTime = _ref.read(startTimeProvider.notifier).state;
-
-      toCommentary(beforeStartTime + 20000000, true, context);
+      toCommentary(beforeStartTime + 18000000, true);
     }
   }
 
@@ -383,24 +288,19 @@ class QuizPopUpViewModel {
     _ref.read(questionNumberProvider.notifier).update((state) => state + 1);
     _ref.read(countDownTimerProvider.notifier).state = 100;
     _ref.read(cdStop.notifier).state = false;
-    _ref.read(questionsProvider.notifier).state = _ref
-        .read(questionsProvider.notifier)
+    _ref.read(problemSetProvider.notifier).state = _ref
+        .read(problemSetProvider.notifier)
         .state
-        .copyWith(test: '第$questionNumber問');
-    print('a');
-    print({_ref.read(questionNumberProvider.notifier).state});
+        .copyWith(question: '第${questionNumber + 1}問');
   }
 
-  void toCommentary(
-      int nextStartTime, bool change, BuildContext context) async {
+  void toCommentary(int nextStartTime, bool change) async {
     _ref.read(firstProvider.notifier).state = true;
-
     if (change) {
       _ref.read(startTimeProvider.notifier).state = nextStartTime;
     }
-    print('ds');
-    print({_ref.read(questionNumberProvider.notifier).state});
-    await Navigator.pushReplacementNamed(context, '/commentary');
+    Navigator.pushReplacementNamed(context!, '/commentary');
+    await Navigator.pushReplacementNamed(context!, '/commentary');
   }
 
   Future<void> correctOrWrong(context, title) async {
@@ -412,5 +312,46 @@ class QuizPopUpViewModel {
                   borderRadius: BorderRadius.all(Radius.circular(20.0))),
               content: Text(title));
         });
+  }
+
+  void correctWrongShowDialog(bool correctWrong) async {
+    Timer? timer;
+    showDialog(
+      context: context!,
+      barrierDismissible: false,
+      builder: (_) {
+        return AlertDialog(
+          title:
+              Text(correctWrong ? '$matchIDさんが正解しました。' : '$matchIDさんが間違いました。'),
+        );
+      },
+    );
+    await Future.delayed(const Duration(seconds: 1), () {
+      Navigator.pop(context!);
+    });
+
+    int nextStartTime = newValueOut.data()!['nextStartTime'];
+    if (correctWrong) {
+      toCommentary(nextStartTime, true);
+    } else {
+      wrongProcess(nextStartTime);
+    }
+  }
+
+  void wrongProcess(int nextStartTime) async {
+    if (buttonTap) {
+      toCommentary(
+        nextStartTime,
+        false,
+      );
+      streamSubscription.cancel();
+    } else {
+      _ref.read(cdStop.notifier).state = false;
+      _ref.read(startTimeProvider.notifier).state = nextStartTime;
+      countDownTimer();
+      streamSubscription.cancel();
+      opponent = false;
+      return;
+    }
   }
 }

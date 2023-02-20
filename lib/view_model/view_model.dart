@@ -7,7 +7,7 @@ import 'package:quiz_new/view_model/logic/count_down_logic.dart';
 import 'package:quiz_new/view_model/provider.dart';
 
 import '../model/chosen_data.dart';
-import '../model/questions_relation/questions.dart';
+import '../model/questions_relation/problem_set.dart';
 import '../model/questios_relation.dart';
 import 'logic/sound_logic.dart';
 

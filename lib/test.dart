@@ -1,18 +1,21 @@
 import 'dart:async';
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 import 'component.dart';
 
 class Test extends StatefulWidget {
-
   final List<String> similarAnswer;
   final String answerForSelect;
-   final String correct;
-   final model;
- Test(
-      {Key? key, required this.similarAnswer, required this.answerForSelect,required this.correct,required this.model})
+  final model;
+
+  const Test(
+      {Key? key,
+      required this.similarAnswer,
+      required this.answerForSelect,
+      required this.model})
       : super(key: key);
 
   @override
@@ -20,7 +23,6 @@ class Test extends StatefulWidget {
 }
 
 class _TestState extends State<Test> {
-
   late Timer _timer;
   double _millisecond = 0.00;
   String answer = '';
@@ -28,7 +30,6 @@ class _TestState extends State<Test> {
   bool a = true;
   int pressNumber = 0;
   List<List<String>> random = [];
-
 
   bool isHiragana(String str) {
     return str.codeUnits.every((int unit) => 0x3040 <= unit && unit <= 0x309F);
@@ -59,10 +60,9 @@ class _TestState extends State<Test> {
     String alphabetBig = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     String number = '123456789';
     Random rnd = Random();
-    var model=widget.model;
+    var model = widget.model;
 
     for (int i = 0; i < answerForSelect.length; i++) {
-
       List<String> randomIndex = [];
       String str = answerForSelect[i];
       String ranStr;
@@ -77,11 +77,11 @@ class _TestState extends State<Test> {
       }
 
       void randomChar(kind) {
-
         for (var i = 0; i < 3; i++) {
           do {
             ranStr = kind[rnd.nextInt(kind.length)];
-          } while (ranStr == str || similar(ranStr)||randomIndex.contains(ranStr));
+          } while (
+              ranStr == str || similar(ranStr) || randomIndex.contains(ranStr));
 
           randomIndex.add(ranStr);
         }
@@ -170,10 +170,10 @@ class _TestState extends State<Test> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  button(context, 0,widget.model),
-                  button(context, 1,widget.model),
-                  button(context, 2,widget.model),
-                  button(context, 3,widget.model),
+                  button(context, 0, widget.model),
+                  button(context, 1, widget.model),
+                  button(context, 2, widget.model),
+                  button(context, 3, widget.model),
                 ],
               ),
             ],
@@ -183,31 +183,24 @@ class _TestState extends State<Test> {
     );
   }
 
-  GestureDetector button(BuildContext context, int buttonNumber,model) {
-
+  GestureDetector button(BuildContext context, int buttonNumber, model) {
     String select = random[pressNumber][buttonNumber];
     return GestureDetector(
         onTap: () {
+          answer = answer + select;
+          if (select != widget.answerForSelect[pressNumber]) {
+            pressNumber = 0;
 
-            answer = answer + select;
-          if(select!=widget.answerForSelect[pressNumber]){
-            pressNumber=0;
-
-            Navigator.pop(context,false);
-
-          }
-          else if(answer==widget.answerForSelect){
-            pressNumber=0;
-            Navigator.pop(context,true);
-          }
-          else {
+            Navigator.pop(context, false);
+          } else if (answer == widget.answerForSelect) {
+            pressNumber = 0;
+            Navigator.pop(context, true);
+          } else {
             pressNumber += 1;
             _countDown = 5;
             _millisecond = 0.00;
-            setState(() {
-            });
+            setState(() {});
           }
-
         },
         child: Container(
           alignment: Alignment.center,
