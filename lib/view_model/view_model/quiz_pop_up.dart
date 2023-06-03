@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ntp/ntp.dart';
 import 'package:quiz_new/view_model/provider.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../model/questions_relation/problem_set.dart';
 import '../../test.dart';
@@ -46,10 +47,10 @@ class QuizPopUpViewModel {
 
   //このバトル全体での情報
   late final String matchID =
-      _ref.read(matchInformationProvider.notifier).state['matchID'];
+  _ref.read(matchInformationProvider.notifier).state['matchID'];
 
   late final String roomID =
-      _ref.read(matchInformationProvider.notifier).state['roomID'];
+  _ref.read(matchInformationProvider.notifier).state['roomID'];
 
   //このバトルの中の問題1つに対する情報
   late final int questionNumber =
@@ -73,11 +74,11 @@ class QuizPopUpViewModel {
   get commentary => _ref.read(problemSetProvider.notifier).state.commentary;
 
   get myInformation => {
-        'uid': _ref.read(myInformationProvider).uid,
-        'consecutive': _ref.read(myInformationProvider).consecutive,
-        'name': _ref.read(myInformationProvider).name
-      };
-
+    'uid': _ref.read(myInformationProvider).uid,
+    'consecutive': _ref.read(myInformationProvider).consecutive,
+    'name': _ref.read(myInformationProvider).name
+  };
+  get table=>_ref.read(resultProvider.notifier).state;
   //ボタンを押せる押せないなど、細かな条件文器に使用している。
   bool opponent = false;
   bool buttonTap = false;
@@ -87,21 +88,25 @@ class QuizPopUpViewModel {
 
   //外に出しておく必要があったため
   late StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>
-      streamSubscription;
+  streamSubscription;
   late DocumentSnapshot<Map<String, dynamic>> newValueOut;
 
   firstProcess(
-    BuildContext context,
-  ) async {
-    if (_ref.read(firstProvider.notifier).state) {
-      _ref.read(firstProvider.notifier).state = false;
+      BuildContext context,
+      ) async {
+    print('関数に入りました。');
 
+    if (_ref.read(firstProvider.notifier).state) {
+      print('if文に入りました。');
+      _ref.read(firstProvider.notifier).state = false;
       //相手と決めた時間になるまで待機する。
+      _ref.read(countDownTimerProvider.notifier).state = 100;
       var myTime = await NTP.now();
       int startTime = _ref.read(startTimeProvider.notifier).state;
       int offset = startTime - myTime.microsecondsSinceEpoch;
       await Future.delayed(Duration(microseconds: offset), () async {});
 
+      print('問題のセットが完了しました。');
       //第n問の問題解説などをセットする。
       questionSet(questionNumber);
 
@@ -139,6 +144,17 @@ class QuizPopUpViewModel {
           if (opponentCorrectOrWrong != null) {
             //相手が正誤が分かった時のそれぞれの処理
             if (opponentCorrectOrWrong!) {
+              Map<String, List> result =
+                  _ref.read(resultProvider.notifier).state;
+              if(result.containsKey('me')){
+                result['me']!.add(false);
+                result['you']!.add(true);
+              }
+              else{
+                result={'me':[false],'you':[true]};
+              }
+
+              _ref.read(resultProvider.notifier).state= result;
               correctWrongShowDialog(true);
             } else {
               correctWrongShowDialog(false);
@@ -150,7 +166,9 @@ class QuizPopUpViewModel {
   }
 
   //ボタンが押された時に処理をする関数。
-  buttonPress(context) async {
+  buttonPress(
+      context,
+      ) async {
     if (!buttonTap && !opponent && countDownStart) {
       _ref.read(cdStop.notifier).state = true;
       //自分の時間を設定する。
@@ -172,9 +190,24 @@ class QuizPopUpViewModel {
           context: context,
           builder: (context) {
             return Test(
-                similarAnswer: ['まつむら'], answerForSelect: 'まつむら', model: this);
+                similarAnswer:
+                _ref.read(problemSetProvider.notifier).state.similarAnswer,
+                answerForSelect: _ref
+                    .read(problemSetProvider.notifier)
+                    .state
+                    .answerForSelect,
+                model: this);
           }).then((value) async {
         if (value == true) {
+          Map<String, List> result =
+              _ref.read(resultProvider.notifier).state;
+          if(result.containsKey('me')){
+            result['me']!.add(true);
+            result['you']!.add(false);
+          }
+          else{
+            result={'me':[true],'you':[true]};
+          }
           var timer = threeTimer();
           await correctOrWrong(context, '正解!!!');
           timer.cancel();
@@ -215,6 +248,16 @@ class QuizPopUpViewModel {
           }
           //相手も間違っていた場合は画面遷移をする。(待ち続ける必要がないため。)
           else {
+            Map<String, List> result =
+                _ref.read(resultProvider.notifier).state;
+            if(result.containsKey('me')){
+              result['me']!.add(false);
+              result['you']!.add(false);
+            }
+            else{
+              result={'me':[false],'you':[false]};
+            }
+
             var myTime = await NTP.now();
             int nextStartTime = myTime.microsecondsSinceEpoch + 13000000;
             await reference.update({
@@ -276,9 +319,29 @@ class QuizPopUpViewModel {
     //間違ってしまって時間が過ぎた場合、相手と時間の差の調節はしているから
     if ((buttonTap || opponentCorrectOrWrong != null) &&
         _ref.read(countDownTimerProvider.notifier).state == 0) {
+      Map<String, List> result =
+          _ref.read(resultProvider.notifier).state;
+      if(result.containsKey('me')){
+        result['me']!.add(false);
+        result['you']!.add(false);
+      }
+      else{
+        result={'me':[false],'you':[false]};
+      }
+
       toCommentary(0, false);
     } else if (!_ref.read(cdStop.notifier).state &&
         _ref.read(countDownTimerProvider.notifier).state == 0) {
+      Map<String, List> result =
+          _ref.read(resultProvider.notifier).state;
+      if(result.containsKey('me')){
+        result['me']!.add(false);
+        result['you']!.add(false);
+      }
+      else{
+        result={'me':[false],'you':[false]};
+      }
+
       int beforeStartTime = _ref.read(startTimeProvider.notifier).state;
       toCommentary(beforeStartTime + 18000000, true);
     }
@@ -307,27 +370,34 @@ class QuizPopUpViewModel {
     await showDialog(
         context: context,
         builder: (context) {
-          return AlertDialog(
-              shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0))),
-              content: Text(title));
+          return SizedBox(
+            child: AlertDialog(
+                contentPadding: EdgeInsets.all(10.sp),
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                content: Text(title,style:TextStyle(fontSize:50.sp ))),
+          );
         });
   }
 
   void correctWrongShowDialog(bool correctWrong) async {
     Timer? timer;
+    late BuildContext innerContext; // 内部の context を保持しておくためのもの
+
     showDialog(
       context: context!,
       barrierDismissible: false,
-      builder: (_) {
+      builder: (BuildContext context) {
+        innerContext = context;
         return AlertDialog(
+          contentPadding: EdgeInsets.all(10.sp),
           title:
-              Text(correctWrong ? '$matchIDさんが正解しました。' : '$matchIDさんが間違いました。'),
+          Text(correctWrong ? '$matchIDさんが正解しました。' : '$matchIDさんが間違いました。',style: TextStyle(fontSize: 50.sp),),
         );
       },
     );
     await Future.delayed(const Duration(seconds: 1), () {
-      Navigator.pop(context!);
+      Navigator.pop(innerContext);
     });
 
     int nextStartTime = newValueOut.data()!['nextStartTime'];
@@ -355,3 +425,5 @@ class QuizPopUpViewModel {
     }
   }
 }
+
+class MatchResult {}

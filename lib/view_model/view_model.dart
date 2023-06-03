@@ -28,6 +28,7 @@ class ViewModel {
    }
 
   chosenTile(int index){
+     print('コース選択タイルを押しました。');
    _soundLogicSub.audioPlay('assets/sounds/chosen.mp3');
     ChosenData chosenData=ChosenData();
     chosenData.colorChange(index);

@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:convert' as convert;
-import 'package:ntp/ntp.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:ntp/ntp.dart';
 import 'package:quiz_new/view_model/logic/firestore_logic.dart';
 
+import '../../model/questions_relation/problem_sets_list.dart';
 import '../logic/sound_logic.dart';
 import '../provider.dart';
 
@@ -36,7 +37,7 @@ class FindOpponents {
         .collection('waitingUsers')
         .doc(myInformation.uid)
         .set({'status': 'waiting', 'updateAt': _myTime.microsecondsSinceEpoch});
- print('fbhsdfh');
+
   }
 
   findStart(context) async {
@@ -47,43 +48,73 @@ class FindOpponents {
       myInformation.uid,
     );
 
-    bool process=false;
-   stream.timeout(const Duration(seconds: 30)).listen((newValue) async{
+    bool process = false;
+    stream.timeout(const Duration(seconds: 30)).listen((newValue) async {
       bool exit = newValue.data()['matchedID'] == null ? false : true;
       if ((newValue.data() as Map<String, dynamic>).containsKey("matchedID")) {
+
         _ref.read(muchStateProvider.notifier).state = '対戦相手が見つかりました。';
         _matchID = newValue.data()['matchedID'];
         _roomID = newValue.data()['roomID'];
-        var startTime=newValue.data()['startTime'];
+        List <dynamic>questionDynamics= newValue.data()['questionNumbers'];
+        List<int> questionNumbers = questionDynamics.map((item) => int.parse(item.toString())).toList();
+        var startTime = newValue.data()['startTime'];
         writeMyInformation();
         Stream<dynamic> streamMuchID = finalCheck();
-        print('kitda');
-       var  _streamSubscription=streamMuchID.listen((newValue) async{
+        List <String>questions=[];
+        List <String>answers=[];
+        List <String > commentarys=[];
+
+        List <List<String>> similarAnswers=[];
+        List <String >answerForSelects=[];
+
+
+        for (dynamic questionNumber in questionNumbers) {
+
+          final snapshot = await FirebaseFirestore.instance.collection('quiz').doc(questionNumber.toString()).get();
+          final data=snapshot.data();
+          questions.add(data!['question']);
+          answers.add(data['answer']);
+          commentarys.add(data['commentary']);
+          similarAnswers.add(List<String>.from(data['similarAnswer'].map<String>((item) => item.toString())));
+          answerForSelects.add(data['answerForSelect']);
+        }
+        ProblemSetsList set=ProblemSetsList(
+          question:  questions,
+          answerForSelect: answerForSelects,
+          similarAnswer: similarAnswers,
+          commentary: commentarys,
+          answer: answers
+        );
+        _ref.read(problemSetsListProvider.notifier).state=set;
+        var _streamSubscription = streamMuchID.listen((newValue) async {
           if ((newValue.data() as Map<String, dynamic>)
               .containsKey('${_matchID}information')) {
             print('hdddaitta');
             Map opponent = newValue.data()!['${_matchID}information'];
             print(opponent);
             _ref.read(opponentProvider.notifier).state = opponent;
-            _ref.read(matchInformationProvider.notifier).state={'matchID':_matchID,'roomID':_roomID};
-            _ref.read(startTimeProvider.notifier).state=startTime;
+            _ref.read(matchInformationProvider.notifier).state = {
+              'matchID': _matchID,
+              'roomID': _roomID
+            };
+            _ref.read(startTimeProvider.notifier).state = startTime;
+
             print('kita');
-            process=true;
-             Navigator.pushReplacementNamed(context, '/much');
+            process = true;
+            Navigator.pushReplacementNamed(context, '/much');
           }
         });
-       print('kokoni');
-       // if(process) {
-       //   _streamSubscription.cancel();
-       // }
-
-
+        print('kokoni');
+        // if(process) {
+        //   _streamSubscription.cancel();
+        // }
       }
     }, onError: (e) {
-     // if (e is TimeoutException) {
-     //   Navigator.pop(context);
-     // }
-   });
+      // if (e is TimeoutException) {
+      //   Navigator.pop(context);
+      // }
+    });
   }
 
   // Navigator.pop(context);
@@ -106,7 +137,7 @@ class FindOpponents {
         jsonEncode(_ref.read(myInformationProvider.notifier).state.toJson());
     final myInformationJsonToMap =
         convert.json.decode(myInformationJson) as Map<String, dynamic>;
-    _fireStoreLogic.write(
-        'rooms', _roomID, '${myInformation.uid}information', myInformationJsonToMap);
+    _fireStoreLogic.write('rooms', _roomID, '${myInformation.uid}information',
+        myInformationJsonToMap);
   }
 }

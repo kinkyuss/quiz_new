@@ -19,12 +19,12 @@ final problemSetsListProvider = StateProvider <ProblemSetsList>((ref) =>
       commentary: ['まだ解説は登録されていません。','富士山や','富士山','富士山','富士山'],
         similarAnswer: [['チョモランマ','エヴェレスト'],[],[],[],[]]
     ));
-final problemSetProvider = StateProvider<ProblemSet>((ref) {return const ProblemSet(question: '問題1' ,answer:'',commentary: '',answerForSelect:'',similarAnswer: [], );});
+final problemSetProvider = StateProvider<ProblemSet>((ref) {return const ProblemSet(question: '問題1' ,answer:'',commentary: '',answerForSelect:'',similarAnswer: []);});
 final firstProvider = StateProvider<bool>((ref) {return true;});
 final cdStop= StateProvider<bool>((ref) {return false;});
 final pushEmojiProvider = StateProvider<bool>((ref) {return false;});
 final questionNumberProvider = StateProvider<int>((ref) =>0);
-final muchStateProvider = StateProvider<String>((ref) =>'対戦相手を探しています。');
+final muchStateProvider = StateProvider<String>((ref) =>'対戦相手を探しています...');
 final opponentProvider =StateProvider<Map>((ref) =>{});
 final matchInformationProvider=StateProvider<Map>((ref) =>{});
 final startTimeRef = FirebaseDatabase.instance.reference().child("startTime");
@@ -33,3 +33,4 @@ final nextQuestionTimeProvider = Provider<int>((ref) => 0);
 final startTimeProvider = StateProvider<int>((ref) => 0);
 final answerProvider = StateProvider<String>((ref) =>'');
 final buttonTimerProvider = StateProvider<String>((ref) =>'');
+final resultProvider = StateProvider<Map<String,List>>((ref) =>{'me':[],'you':[]});

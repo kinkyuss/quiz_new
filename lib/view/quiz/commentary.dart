@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quiz_new/component.dart';
-import 'package:quiz_new/view_model/logic/show_test_number.logic.dart';
 import 'package:quiz_new/view_model/provider.dart';
 import 'package:quiz_new/view_model/view_model/quiz_pop_up.dart';
 
@@ -16,13 +13,34 @@ class Commentary extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     DeviceSize size = DeviceSize(context);
     QuizPopUpViewModel quizPopUpViewModel =
-    QuizPopUpViewModel(context1: context);
+        QuizPopUpViewModel(context1: context);
     quizPopUpViewModel.setRef(ref);
-    WidgetsBinding.instance.addPostFrameCallback((_)async {
 
-      await Future.delayed(Duration(seconds: 5), ()async {
+    bool containsFive(List list) {
+      int count = 0;
+      for (String s in list) {
+        if (s == '〇') {
+          count++;
+        }
+      }
+      return count >= 3;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(Duration(seconds: 5), () async {
         // await showTestNumber(context, 1, 3);
       });
+
+      if (containsFive(ref.read(resultProvider.notifier).state['you']!) ||
+          containsFive(ref.read(resultProvider.notifier).state['me']!) ||
+          ref.read(resultProvider.notifier).state['me']!.length >=
+              ref
+                  .read(problemSetsListProvider.notifier)
+                  .state
+                  .question
+                  .length) {
+        Navigator.pushReplacementNamed(context, '/result');
+      }
 
       await quizPopUpViewModel.commentaryToQuiz();
       Navigator.pushReplacementNamed(context, '/quiz_pop_up1');
@@ -108,25 +126,25 @@ class Commentary extends ConsumerWidget {
                     ),
                     ref.watch(pushEmojiProvider.notifier).state
                         ? InkWell(
-                      onTap: () => ref
-                          .watch(pushEmojiProvider.notifier)
-                          .state = false,
-                      child: Container(
-                        height: size.height * 0.2,
-                        width: size.width * 0.4,
-                        color: Colors.white.withOpacity(0.6),
-                      ),
-                    )
+                            onTap: () => ref
+                                .watch(pushEmojiProvider.notifier)
+                                .state = false,
+                            child: Container(
+                              height: size.height * 0.2,
+                              width: size.width * 0.4,
+                              color: Colors.white.withOpacity(0.6),
+                            ),
+                          )
                         : InkWell(
-                      onTap: () => ref
-                          .watch(pushEmojiProvider.notifier)
-                          .state = true,
-                      child: Container(
-                        height: 50,
-                        width: 50,
-                        color: Colors.white.withOpacity(0.6),
-                      ),
-                    ),
+                            onTap: () => ref
+                                .watch(pushEmojiProvider.notifier)
+                                .state = true,
+                            child: Container(
+                              height: 50,
+                              width: 50,
+                              color: Colors.white.withOpacity(0.6),
+                            ),
+                          ),
                     Row(
                       children: [
                         OftenText(text: '😊').medium(context),

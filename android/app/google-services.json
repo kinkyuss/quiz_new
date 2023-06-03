@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "427649743583",
+    "firebase_url": "https://quiz-392b5-default-rtdb.firebaseio.com",
     "project_id": "quiz-392b5",
     "storage_bucket": "quiz-392b5.appspot.com"
   },
@@ -29,6 +30,13 @@
             {
               "client_id": "427649743583-34j8m0qnqeu3r8mm45fk7b8pfql4ujpb.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "427649743583-smo5tu743t7hlrae6b2b4sjksl9q6js8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.quizNew"
+              }
             }
           ]
         }

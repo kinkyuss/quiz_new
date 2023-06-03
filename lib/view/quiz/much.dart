@@ -5,8 +5,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ntp/ntp.dart';
 import 'package:quiz_new/component.dart';
 import 'package:quiz_new/view_model/view_model/quiz_pop_up.dart';
-
+import 'package:quiz_new/model/questions_relation/problem_set.dart';
 import '../../model/device_data.dart';
+import '../../view_model/provider.dart';
 
 class Much extends ConsumerWidget {
   const Much({Key? key}) : super(key: key);
@@ -16,6 +17,11 @@ class Much extends ConsumerWidget {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await Future.delayed(const Duration(seconds:3), () async {
+        ref.read(problemSetProvider.notifier).state =  ProblemSet(question: '問題1' ,answer:'',commentary: '',answerForSelect:'',similarAnswer: [], );
+        ref.read(muchStateProvider.notifier).state = '対戦相手を探しています...';
+        ref.read(firstProvider.notifier).state = true;
+
+        ref.read(resultProvider.notifier).state={'me':[],'you':[]};
         Navigator.pushNamed(context, '/quiz_pop_up1');
       });
     });

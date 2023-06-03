@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quiz_new/view_model/view_model/find_opponents.dart';
 import 'package:quiz_new/view_model/view_model/quiz_pop_up.dart';
+import 'package:sizer/sizer.dart';
 
 import 'model/device_data.dart';
 import 'view_model/view_model.dart';
@@ -178,7 +179,7 @@ class MainButton extends StatelessWidget {
                 style: TextStyle(
                   color: Colors.white,
                   fontStyle: FontStyle.italic,
-                  fontSize: size.textScaleFactor * 50,
+                  fontSize: 35.sp
                 ),
               ),
             )));
@@ -206,7 +207,7 @@ class SubButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
         ),
         child:
-            Icon(icon, size: size.textScaleFactor * 40, color: Colors.white));
+            Icon(icon, size: size.textScaleFactor * 80, color: Colors.white));
   }
 }
 
@@ -276,7 +277,7 @@ class EnterButton extends ConsumerWidget {
             'GO!',
             style: TextStyle(
                 fontStyle: FontStyle.italic,
-                fontSize: size.textScaleFactor * 40,
+                fontSize: 25.sp,
                 color: Colors.white),
           ))),
     );

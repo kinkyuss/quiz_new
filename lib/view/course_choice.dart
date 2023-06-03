@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quiz_new/view_model/view_model.dart';
+import 'package:sizer/sizer.dart';
 
 import '../component.dart';
 import '../model/device_data.dart';
@@ -27,9 +28,10 @@ class CourseChoice extends ConsumerWidget {
               color: Colors.black,
               height: size.height * 0.6,
               child: Column(children: [
-                OftenText(text: 'コースの選択').small(context),
-                customTile('早押しクイズ', 'assets/images/火星.png', 0, size,context),
-                customTile('選択クイズ', 'assets/images/土星.png', 1, size,context)
+                OftenText(text: 'コースの選択').medium(context),
+                SizedBox(height: 1.h),
+                customTile('早押しクイズ', 'assets/images/火星.png', 0, size, context),
+                customTile('選択クイズ　', 'assets/images/土星.png', 1, size, context)
               ])),
           EnterButton(
             viewModel: viewModel,
@@ -39,7 +41,8 @@ class CourseChoice extends ConsumerWidget {
     ])));
   }
 
-  customTile(String title, String imageFile, int index, DeviceSize size,BuildContext context) {
+  customTile(String title, String imageFile, int index, DeviceSize size,
+      BuildContext context) {
     return Column(
       children: [
         //区切り線
@@ -55,16 +58,19 @@ class CourseChoice extends ConsumerWidget {
             height: size.height * 0.25,
             color: viewModel.chosenTileColors[index],
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  width: size.width * 0.3,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                    image: AssetImage(imageFile),
+                Expanded(
+                  child: Container(
+                      child: Image.asset(
+                    imageFile,
+                    fit: BoxFit.cover,
                   )),
                 ),
-                OftenText(text: title,mediumFontSize: 40).medium(context),
+                SizedBox(width: 20.w),
+
+                OftenText(text: title).large(context),
+                SizedBox(width: 15.w),
               ],
             ),
           ),

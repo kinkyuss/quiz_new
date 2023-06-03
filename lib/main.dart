@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:quiz_new/view/quiz/commentary.dart';
 import 'package:quiz_new/view/quiz/much.dart';
 import 'package:quiz_new/view/quiz/quiz_answer.dart';
 import 'package:quiz_new/view/quiz/quiz_pop_up1.dart';
+import 'package:quiz_new/view/quiz/result.dart';
 import 'package:quiz_new/view/quiz/vi_or_de.dart';
 import 'package:quiz_new/view/quiz/wait.dart';
 import 'package:quiz_new/view/ranking.dart';
@@ -84,7 +86,7 @@ class MyApp extends ConsumerWidget {
               '/test':(context)=> Test(),
               '/top': (context) => const Top(),
               '/ranking': (context) => const Ranking(),
-              '/settings': (cotntext) => const Settings(),
+              // '/settings': (cotntext) => const Settings(),
               '/course_choice': (context) => CourseChoice(),
               '/choice': (context) => Choice(),
               '/wait_logic': (context) => WaitLogic(),
@@ -93,6 +95,8 @@ class MyApp extends ConsumerWidget {
 
               '/quiz_pop_up1': (context) => QuizPopUp1(),
               '/commentary': (context) => const Commentary(),
+              '/result': (context) => const Result(),
+
 
               '/quiz_answer': (context) => const QuizAnswer(),
               '/chat_room': (context) => const ChatRoom(),

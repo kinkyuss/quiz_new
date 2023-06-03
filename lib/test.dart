@@ -69,9 +69,13 @@ class _TestState extends State<Test> {
 
       bool similar(ranStr) {
         for (var element in similarAnswer) {
+          if(element.length<i){
+            return false;
+          }
           if (element[i] == ranStr) {
             return true;
           }
+
         }
         return false;
       }
@@ -133,9 +137,7 @@ class _TestState extends State<Test> {
 
     return Column(
       children: [
-        SizedBox(
-          height: 38.h,
-        ),
+        Spacer(),
         Container(
           height: 58.h,
           color: Colors.white.withOpacity(0.8),
@@ -145,14 +147,15 @@ class _TestState extends State<Test> {
                 shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(20.0))),
                 content: OftenText(
+                  largeFontSize: 50.sp,
                   text: answer,
                   color: Colors.black,
-                ).medium(context),
+                ).large(context),
               ),
               const Spacer(flex: 1),
               SizedBox(
-                  width: 10.h,
-                  height: 10.h,
+                  width: 12.h,
+                  height: 12.h,
                   child: Stack(fit: StackFit.expand, children: [
                     CircularProgressIndicator(
                         value: _millisecond,
@@ -166,7 +169,7 @@ class _TestState extends State<Test> {
                           .medium(context),
                     )
                   ])),
-              const Spacer(flex: 3),
+              const Spacer(flex: 2),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -204,8 +207,8 @@ class _TestState extends State<Test> {
         },
         child: Container(
           alignment: Alignment.center,
-          width: 100.0,
-          height: 100.0,
+          width: 20.w,
+          height: 20.w,
           decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/utyuu 1.png'),
