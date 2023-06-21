@@ -26,14 +26,14 @@ class CourseChoice extends ConsumerWidget {
         children: [
           Container(
               color: Colors.black,
-              height: size.height * 0.6,
               child: Column(children: [
-                OftenText(text: 'コースの選択').medium(context),
+                OftenText(text: 'コースの選択').small(context),
                 SizedBox(height: 1.h),
                 customTile('早押しクイズ', 'assets/images/火星.png', 0, size, context),
                 customTile('選択クイズ　', 'assets/images/土星.png', 1, size, context)
               ])),
           EnterButton(
+            text: 'GO!',
             viewModel: viewModel,
           ),
         ],
@@ -60,6 +60,7 @@ class CourseChoice extends ConsumerWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                SizedBox(width: 10.w),
                 Expanded(
                   child: Container(
                       child: Image.asset(
@@ -69,7 +70,7 @@ class CourseChoice extends ConsumerWidget {
                 ),
                 SizedBox(width: 20.w),
 
-                OftenText(text: title).large(context),
+                OftenText(text: title,mediumFontSize: 25).medium(context),
                 SizedBox(width: 15.w),
               ],
             ),

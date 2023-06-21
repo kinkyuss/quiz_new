@@ -79,7 +79,7 @@ class MyApp extends ConsumerWidget {
               // textTheme: GoogleFonts.notoSansJavaneseTextTheme(),
             ),
             // home:const Top(),
-            initialRoute: '/top',
+            initialRoute: '/result',
 
             routes: {
               // 画面の名前とWidgetを紐づける

@@ -24,6 +24,7 @@ class QuizPopUpViewModel {
 
   final SoundLogic _soundLogicSub = SoundLogic();
 
+  bool correctWrong6=false;
   void setRef(WidgetRef ref) {
     _ref = ref;
   }
@@ -143,18 +144,11 @@ class QuizPopUpViewModel {
 
           if (opponentCorrectOrWrong != null) {
             //相手が正誤が分かった時のそれぞれの処理
-            if (opponentCorrectOrWrong!) {
-              Map<String, List> result =
-                  _ref.read(resultProvider.notifier).state;
-              if(result.containsKey('me')){
-                result['me']!.add(false);
-                result['you']!.add(true);
-              }
-              else{
-                result={'me':[false],'you':[true]};
-              }
+            print('fdsafdsgggg');
+            print( _ref.read(resultProvider.notifier).state);
 
-              _ref.read(resultProvider.notifier).state= result;
+            if (opponentCorrectOrWrong!) {
+
               correctWrongShowDialog(true);
             } else {
               correctWrongShowDialog(false);
@@ -206,7 +200,7 @@ class QuizPopUpViewModel {
             result['you']!.add(false);
           }
           else{
-            result={'me':[true],'you':[true]};
+            result={'me':[true],'you':[false]};
           }
           var timer = threeTimer();
           await correctOrWrong(context, '正解!!!');
@@ -334,6 +328,8 @@ class QuizPopUpViewModel {
         _ref.read(countDownTimerProvider.notifier).state == 0) {
       Map<String, List> result =
           _ref.read(resultProvider.notifier).state;
+      print('fadfdsfdagrdgdsfgtfh');
+      print(result);
       if(result.containsKey('me')){
         result['me']!.add(false);
         result['you']!.add(false);
@@ -392,16 +388,44 @@ class QuizPopUpViewModel {
         return AlertDialog(
           contentPadding: EdgeInsets.all(10.sp),
           title:
-          Text(correctWrong ? '$matchIDさんが正解しました。' : '$matchIDさんが間違いました。',style: TextStyle(fontSize: 50.sp),),
+          Text(correctWrong ? '$matchIDさんが正解しました。' : '$matchIDさんが間違いました。',style: TextStyle(fontSize: 30.sp),),
         );
       },
     );
     await Future.delayed(const Duration(seconds: 1), () {
       Navigator.pop(innerContext);
     });
+    print('fdojsafljkdsalkfj');
+    print( _ref.read(resultProvider.notifier).state);
+
 
     int nextStartTime = newValueOut.data()!['nextStartTime'];
     if (correctWrong) {
+      if(!correctWrong6) {
+        correctWrong6 = true;
+        Map<String, List> result =
+            _ref
+                .read(resultProvider.notifier)
+                .state;
+        print('faesfds');
+        print(result);
+        if (result.containsKey('me')) {
+          result['me']!.add(false);
+          result['you']!.add(true);
+        }
+        else {
+          result = {'me': [false], 'you': [true]};
+        }
+
+        print('fasdfdsa');
+        print(result);
+        _ref
+            .read(resultProvider.notifier)
+            .state = result;
+        print(_ref
+            .read(resultProvider.notifier)
+            .state);
+      }
       toCommentary(nextStartTime, true);
     } else {
       wrongProcess(nextStartTime);

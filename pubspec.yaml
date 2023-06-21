@@ -55,6 +55,7 @@ dependencies:
   sizer: ^2.0.15
   circular_countdown_timer: ^0.2.3
   simple_timer: ^2.0.0
+  bordered_text: ^2.0.0
 
 dev_dependencies:
   flutter_test:

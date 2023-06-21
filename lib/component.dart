@@ -1,9 +1,7 @@
-import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quiz_new/view_model/view_model/find_opponents.dart';
-import 'package:quiz_new/view_model/view_model/quiz_pop_up.dart';
 import 'package:sizer/sizer.dart';
 
 import 'model/device_data.dart';
@@ -199,15 +197,15 @@ class SubButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: size.width * 0.18,
-        width: size.width * 0.18,
+        height: size.width * 0.20,
+        width: size.width * 0.20,
         decoration: BoxDecoration(
           border: Border.all(width: 4, color: Colors.grey),
           color: Colors.white.withOpacity(0.4),
           borderRadius: BorderRadius.circular(30),
         ),
         child:
-            Icon(icon, size: size.textScaleFactor * 80, color: Colors.white));
+            Icon(icon, size: size.textScaleFactor * 60, color: Colors.white));
   }
 }
 
@@ -249,10 +247,12 @@ class QQBackGround extends StatelessWidget {
 class EnterButton extends ConsumerWidget {
   const EnterButton({
     Key? key,
-    required this.viewModel,
+    required this.text,
+     this.viewModel,
   }) : super(key: key);
 
-  final ViewModel viewModel;
+  final String text;
+  final ViewModel ?viewModel;
 
   @override
   Widget build(BuildContext context,ref) {
@@ -269,12 +269,13 @@ class EnterButton extends ConsumerWidget {
           width: size.width * 0.4,
           decoration: BoxDecoration(
             border: Border.all(width: 2, color: Colors.grey),
-            color: viewModel.enterTileColor,
+            color: viewModel?.enterTileColor?? Colors.orangeAccent,
+
             borderRadius: BorderRadius.circular(20),
           ),
           child: Center(
               child: Text(
-            'GO!',
+            text,
             style: TextStyle(
                 fontStyle: FontStyle.italic,
                 fontSize: 25.sp,

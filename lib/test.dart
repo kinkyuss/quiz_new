@@ -69,10 +69,10 @@ class _TestState extends State<Test> {
 
       bool similar(ranStr) {
         for (var element in similarAnswer) {
-          if(element.length<i){
+          if(element.length<=i){
             return false;
           }
-          if (element[i] == ranStr) {
+          else if (element[i] == ranStr) {
             return true;
           }
 

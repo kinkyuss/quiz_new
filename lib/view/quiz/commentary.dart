@@ -18,11 +18,14 @@ class Commentary extends ConsumerWidget {
 
     bool containsFive(List list) {
       int count = 0;
-      for (String s in list) {
-        if (s == '〇') {
+      for (bool s in list) {
+        if (s ) {
           count++;
         }
       }
+      print(list);
+      print(list);
+      print(count >= 3);
       return count >= 3;
     }
 
@@ -31,6 +34,7 @@ class Commentary extends ConsumerWidget {
         // await showTestNumber(context, 1, 3);
       });
 
+      print(ref.read(resultProvider.notifier).state!);
       if (containsFive(ref.read(resultProvider.notifier).state['you']!) ||
           containsFive(ref.read(resultProvider.notifier).state['me']!) ||
           ref.read(resultProvider.notifier).state['me']!.length >=
@@ -39,11 +43,17 @@ class Commentary extends ConsumerWidget {
                   .state
                   .question
                   .length) {
+        print( ref
+            .read(problemSetsListProvider.notifier)
+            .state
+            .question);
         Navigator.pushReplacementNamed(context, '/result');
       }
+      else {
+        await quizPopUpViewModel.commentaryToQuiz();
+        Navigator.pushReplacementNamed(context, '/quiz_pop_up1');
+      }
 
-      await quizPopUpViewModel.commentaryToQuiz();
-      Navigator.pushReplacementNamed(context, '/quiz_pop_up1');
     });
 
     return Material(
