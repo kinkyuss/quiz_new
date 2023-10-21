@@ -77,8 +77,10 @@ class QuizPopUpViewModel {
   get myInformation => {
     'uid': _ref.read(myInformationProvider).uid,
     'consecutive': _ref.read(myInformationProvider).consecutive,
-    'name': _ref.read(myInformationProvider).name
+    'name': _ref.read(myInformationProvider).name,
+    'winRate': _ref.read(myInformationProvider).winRate,
   };
+  get opponentInformation=>_ref.read(opponentProvider.notifier).state;
   get table=>_ref.read(resultProvider.notifier).state;
   //ボタンを押せる押せないなど、細かな条件文器に使用している。
   bool opponent = false;

@@ -131,8 +131,8 @@ class QuizPopUp1 extends StatelessWidget {
       tableContainer(size.height, size.textScaleFactor, 'あなた'),
     ];
     List<Widget> opponentWinOrLoss = [
-      tableContainer(size.height, size.textScaleFactor, 'しみしょー'),
-    ];
+      tableContainer(size.height, size.textScaleFactor, ref.read(opponentProvider.notifier).state['name']!
+      ) ];
     List<Widget> title = [
       tableContainer(size.height, size.textScaleFactor, ''),
     ];

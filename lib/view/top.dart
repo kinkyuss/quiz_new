@@ -45,6 +45,8 @@ class _TopState extends State<Top> with SingleTickerProviderStateMixin {
     print('Difference: ${_myTime.difference(_ntpTime).inMilliseconds}ms');
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     DeviceSize size = DeviceSize(context);
@@ -100,9 +102,9 @@ class _TopState extends State<Top> with SingleTickerProviderStateMixin {
                     fit: BoxFit.cover)),
           ),
           const Spacer(flex: 3),
-          MainButton(size: size, title: 'START'),
-          const Spacer(),
-          MainButton(size: size, title: 'PREMIUM'),
+          MainButton(size: size, title: 'START',seni: 'start'),
+          Spacer()  ,
+          MainButton(size: size, title: 'PREMIUM',seni: 'premium'),
           const Spacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,

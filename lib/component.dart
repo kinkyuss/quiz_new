@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quiz_new/view_model/view_model/find_opponents.dart';
@@ -10,11 +9,9 @@ import 'view_model/view_model.dart';
 class CorrectOrWrong {
   final String result;
 
-  CorrectOrWrong(
-      {required this.result});
+  CorrectOrWrong({required this.result});
 
   build(BuildContext context) async {
-
     return await showDialog(
         context: context,
         builder: (context) {
@@ -23,9 +20,8 @@ class CorrectOrWrong {
                   borderRadius: BorderRadius.all(Radius.circular(20.0))),
               content: Text('正解!!'));
         });
-
-}}
-
+  }
+}
 
 class ShowDialog {
   final Function process;
@@ -33,28 +29,26 @@ class ShowDialog {
   final complete;
   final context;
 
-  ShowDialog({required this.process, required this.complete,required this.a,required this.context});
+  ShowDialog(
+      {required this.process,
+      required this.complete,
+      required this.a,
+      required this.context});
 
   build(BuildContext context) {
-
-    String b='答え';
+    String b = '答え';
     DeviceSize size = DeviceSize(context);
     return showDialog(
       barrierDismissible: true,
       context: context,
       builder: (dialogContext) {
-
-
         return AlertDialog(
-
-
           content: SizedBox(
             height: size.height * 0.14,
             child: Column(
               children: [
                 SingleChildScrollView(
                   child: TextField(
-
                     onChanged: (value) {
                       b = value;
                     },
@@ -70,14 +64,13 @@ class ShowDialog {
                     TextButton(
                       child: const Text('ki'),
                       onPressed: () async {
-                Navigator.pop(context);
-                      },),
-
-                      TextButton(
+                        Navigator.pop(context);
+                      },
+                    ),
+                    TextButton(
                       child: const Text('決定'),
                       onPressed: () async {
                         await process(a, b);
-
                       },
                     ),
                   ],
@@ -87,9 +80,8 @@ class ShowDialog {
           ),
         );
       },
-    )
-        .whenComplete(() {
-complete(a,b);
+    ).whenComplete(() {
+      complete(a, b);
     });
   }
 }
@@ -112,10 +104,8 @@ class OftenText {
     DeviceSize size = DeviceSize(context);
     return Text(
       text,
-
       style: TextStyle(
         fontSize: size.textScaleFactor * largeFontSize,
-
         color: color,
         decoration: TextDecoration.none,
       ),
@@ -151,17 +141,31 @@ class MainButton extends StatelessWidget {
   const MainButton({
     Key? key,
     required this.size,
+    required this.seni,
     required this.title,
   }) : super(key: key);
+  final String seni;
 
   final String title;
   final DeviceSize size;
 
+  bool isJapaneseOrEnglish(String text) {
+    for (int i = 0; i < text.length; i++) {
+      int codePoint = text.codeUnitAt(i);
+      if (codePoint > 127) {
+        // 日本語の文字コードはASCII範囲外（128以上）
+        return true; // 日本語が含まれていると判断
+      }
+    }
+    return false; // 日本語以外の文字しか含まれていないと判断
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
+
         onTap: () async {
-          Navigator.pushNamed(context, '/course_choice');
+          Navigator.pushNamed(context, '/$seni');
         },
         child: Container(
             height: size.height * 0.125,
@@ -175,10 +179,9 @@ class MainButton extends StatelessWidget {
               child: Text(
                 title,
                 style: TextStyle(
-                  color: Colors.white,
-                  fontStyle: FontStyle.italic,
-                  fontSize: 35.sp
-                ),
+                    color: Colors.white,
+                    fontStyle: isJapaneseOrEnglish(title)?null:FontStyle.italic,
+                    fontSize: 35.sp),
               ),
             )));
   }
@@ -245,41 +248,45 @@ class QQBackGround extends StatelessWidget {
 }
 
 class EnterButton extends ConsumerWidget {
-  const EnterButton({
-    Key? key,
-    required this.text,
-     this.viewModel,
-  }) : super(key: key);
+  const EnterButton(
+      {Key? key,
+      required this.text,
+      this.viewModel,
+      this.color,
+      this.style,
+      required this.tap})
+      : super(key: key);
 
   final String text;
-  final ViewModel ?viewModel;
+  final ViewModel? viewModel;
+  final Color? color;
+  final FontStyle? style;
+  final Function tap;
 
   @override
-  Widget build(BuildContext context,ref) {
+  Widget build(BuildContext context, ref) {
     DeviceSize size = DeviceSize(context);
-    FindOpponents model=FindOpponents();
+    FindOpponents model = FindOpponents();
     model.setRef(ref);
 
     return InkWell(
       enableFeedback: false,
-      onTap: () => Navigator.pushNamed(context, '/wait'),
-
-    child: Container(
+      onTap: () {
+        tap();
+      },
+      child: Container(
           height: size.height * 0.08,
           width: size.width * 0.4,
           decoration: BoxDecoration(
             border: Border.all(width: 2, color: Colors.grey),
-            color: viewModel?.enterTileColor?? Colors.orangeAccent,
-
+            color: viewModel?.enterTileColor ?? color ?? Colors.orangeAccent,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Center(
               child: Text(
             text,
             style: TextStyle(
-                fontStyle: FontStyle.italic,
-                fontSize: 25.sp,
-                color: Colors.white),
+                fontStyle: style, fontSize: 25.sp, color: Colors.white),
           ))),
     );
   }
@@ -314,9 +321,9 @@ class ColumnFlame extends StatelessWidget {
             ),
             Flexible(
               child: OftenText(
-                  text:
-                  '人間の平均歩行時速を４kmとし、月から地球の距離を３８万kmとすると、約１１年かかります。ちなみに、時速１０００ｋｍのジェット旅客機であれば、約１５．８日かかります。',
-                  smallFontSize: 20)
+                      text:
+                          '人間の平均歩行時速を４kmとし、月から地球の距離を３８万kmとすると、約１１年かかります。ちなみに、時速１０００ｋｍのジェット旅客機であれば、約１５．８日かかります。',
+                      smallFontSize: 20)
                   .small(context),
             )
           ],
@@ -358,7 +365,6 @@ class HexColor extends Color {
   HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
 }
 
-
 class LoadingAnimation extends StatelessWidget {
   const LoadingAnimation({
     Key? key,
@@ -367,9 +373,10 @@ class LoadingAnimation extends StatelessWidget {
         super(key: key);
 
   final AnimationController _controller;
+
   @override
   Widget build(BuildContext context) {
-    DeviceSize size=DeviceSize(context);
+    DeviceSize size = DeviceSize(context);
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
@@ -378,25 +385,23 @@ class LoadingAnimation extends StatelessWidget {
           child: child,
         );
       },
-      child: Image.asset("assets/images/地球.png",
-          scale: size.textScaleFactor / 1),
+      child:
+          Image.asset("assets/images/地球.png", scale: size.textScaleFactor / 1),
     );
   }
 }
 
 class UserInformation extends StatelessWidget {
-
-
   const UserInformation({
     Key? key,
-     required this.information,
+    required this.information,
   }) : super(key: key);
 
   final Map information;
 
   @override
   Widget build(BuildContext context) {
-    DeviceSize size=DeviceSize(context);
+    DeviceSize size = DeviceSize(context);
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.white, width: 1),
@@ -429,7 +434,7 @@ class UserInformation extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Text('正答率:93％',
+              Text('正答率:${information['winRate']}％',
                   style: TextStyle(
                     fontSize: size.textScaleFactor * 20,
                     color: Colors.white,
@@ -454,5 +459,3 @@ class UserInformation extends StatelessWidget {
     );
   }
 }
-
-

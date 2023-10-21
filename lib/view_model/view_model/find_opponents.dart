@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:convert' as convert;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:ntp/ntp.dart';
@@ -22,7 +23,7 @@ class FindOpponents {
 
   late String _roomID;
   late String _matchID;
-  late var myInformation = _ref.read(myInformationProvider.notifier).state;
+    late var myInformation = _ref.read(myInformationProvider.notifier).state;
   final SoundLogic _soundLogicMain = SoundLogic();
   final SoundLogic _soundLogicSub = SoundLogic();
   final FireStoreLogic _fireStoreLogic = FireStoreLogic();
@@ -33,10 +34,12 @@ class FindOpponents {
     print('fireStoreWrite関数に入りました。');
     _soundLogicSub.audioPlay('assets/sounds/enter.mp3');
     var _myTime = await NTP.now();
+    FirebaseAuth auth = FirebaseAuth.instance;
+    auth.currentUser!.updateDisplayName('基本');
     await FirebaseFirestore.instance
         .collection('waitingUsers')
         .doc(myInformation.uid)
-        .set({'status': 'waiting', 'updateAt': _myTime.microsecondsSinceEpoch});
+        .set({'status': 'waiting', 'updateAt': _myTime.microsecondsSinceEpoch,'uid':auth.currentUser!.displayName});
 
   }
 

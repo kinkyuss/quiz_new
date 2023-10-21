@@ -33,6 +33,7 @@ class CourseChoice extends ConsumerWidget {
                 customTile('選択クイズ　', 'assets/images/土星.png', 1, size, context)
               ])),
           EnterButton(
+            tap: (){Navigator.pushNamed(context, '/wait');},
             text: 'GO!',
             viewModel: viewModel,
           ),

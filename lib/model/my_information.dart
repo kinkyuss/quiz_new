@@ -9,6 +9,7 @@ class MyInformation with _$MyInformation {
   const factory MyInformation({
     required String name,
     required String uid,
+    required double winRate,
     required int consecutive,
   }) = _MyInformation;
 

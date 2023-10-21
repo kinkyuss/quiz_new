@@ -43,9 +43,9 @@ class Much extends ConsumerWidget {
               SizedBox(height: size.height * 0.025),
               OftenText(text: 'VS').large(context),
               SizedBox(height: size.height * 0.025),
-              // UserInformation(
-              //   information: quizPopUpViewModel.opponentInformation,
-              // ),
+              UserInformation(
+                information: quizPopUpViewModel.opponentInformation,
+              ),
             ],
           ),
         ),

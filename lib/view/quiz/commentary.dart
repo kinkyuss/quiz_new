@@ -6,15 +6,23 @@ import 'package:quiz_new/view_model/view_model/quiz_pop_up.dart';
 
 import '../../model/device_data.dart';
 
-class Commentary extends ConsumerWidget {
+class Commentary extends ConsumerStatefulWidget {
   const Commentary({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, ref) {
+  ConsumerState<Commentary> createState() => _CommentaryState();
+}
+
+class _CommentaryState extends ConsumerState<Commentary> {
+  bool onTap=false;
+
+  @override
+  Widget build(BuildContext context) {
     DeviceSize size = DeviceSize(context);
     QuizPopUpViewModel quizPopUpViewModel =
         QuizPopUpViewModel(context1: context);
     quizPopUpViewModel.setRef(ref);
+
 
     bool containsFive(List list) {
       int count = 0;
@@ -43,10 +51,7 @@ class Commentary extends ConsumerWidget {
                   .state
                   .question
                   .length) {
-        print( ref
-            .read(problemSetsListProvider.notifier)
-            .state
-            .question);
+
         Navigator.pushReplacementNamed(context, '/result');
       }
       else {
@@ -55,6 +60,7 @@ class Commentary extends ConsumerWidget {
       }
 
     });
+
 
     return Material(
       child: SafeArea(
@@ -99,84 +105,95 @@ class Commentary extends ConsumerWidget {
                           const Spacer(),
                           Row(
                             children: [
-                              const Spacer(),
-                              Icon(
-                                Icons.favorite_border,
-                                size: size.textScaleFactor * 75,
-                                color: Colors.red,
+Spacer()  ,
+                              InkWell(
+
+                            
+                                onTap:() {
+                                  print('af');
+                                  setState(() {
+                                    onTap=!onTap;
+                                  });
+
+                                },
+                                child: Icon(
+                                  onTap?Icons.favorite:Icons.favorite_border,
+                                  size: size.textScaleFactor * 75,
+                                  color: Colors.red,
+                                ),
                               )
                             ],
                           ),
                         ],
                       );
                     })),
-                Spacer(),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Column(
-                          children: [
-                            ClipOval(
-                              child: Image.asset(
-                                'assets/images/清水翔太.jpg',
-                                width: size.height * 0.1,
-                                height: size.height * 0.1,
-                                fit: BoxFit.fill,
-                              ),
-                            ),
-                            OftenText(text: '清水翔太', smallFontSize: 20)
-                                .small(context)
-                          ],
-                        ),
-                        OftenText(text: '😊').medium(context)
-                      ],
-                    ),
-                    ref.watch(pushEmojiProvider.notifier).state
-                        ? InkWell(
-                            onTap: () => ref
-                                .watch(pushEmojiProvider.notifier)
-                                .state = false,
-                            child: Container(
-                              height: size.height * 0.2,
-                              width: size.width * 0.4,
-                              color: Colors.white.withOpacity(0.6),
-                            ),
-                          )
-                        : InkWell(
-                            onTap: () => ref
-                                .watch(pushEmojiProvider.notifier)
-                                .state = true,
-                            child: Container(
-                              height: 50,
-                              width: 50,
-                              color: Colors.white.withOpacity(0.6),
-                            ),
-                          ),
-                    Row(
-                      children: [
-                        OftenText(text: '😊').medium(context),
-                        Column(
-                          children: [
-                            ClipOval(
-                              child: Image.asset(
-                                'assets/images/清水翔太.jpg',
-                                width: size.height * 0.1,
-                                height: size.height * 0.1,
-                                fit: BoxFit.fill,
-                              ),
-                            ),
-                            OftenText(text: '清水翔太', smallFontSize: 20)
-                                .small(context)
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Spacer(),
+                // Spacer(),
+                // Row(
+                //   crossAxisAlignment: CrossAxisAlignment.end,
+                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //   children: [
+                //     Row(
+                //       children: [
+                //         Column(
+                //           children: [
+                //             ClipOval(
+                //               child: Image.asset(
+                //                 'assets/images/清水翔太.jpg',
+                //                 width: size.height * 0.1,
+                //                 height: size.height * 0.1,
+                //                 fit: BoxFit.fill,
+                //               ),
+                //             ),
+                //             OftenText(text: '清水翔太', smallFontSize: 20)
+                //                 .small(context)
+                //           ],
+                //         ),
+                //         OftenText(text: '😊').medium(context)
+                //       ],
+                //     ),
+                //     ref.watch(pushEmojiProvider.notifier).state
+                //         ? InkWell(
+                //             onTap: () => ref
+                //                 .watch(pushEmojiProvider.notifier)
+                //                 .state = false,
+                //             child: Container(
+                //               height: size.height * 0.2,
+                //               width: size.width * 0.4,
+                //               color: Colors.white.withOpacity(0.6),
+                //             ),
+                //           )
+                //         : InkWell(
+                //             onTap: () => ref
+                //                 .watch(pushEmojiProvider.notifier)
+                //                 .state = true,
+                //             child: Container(
+                //               height: 50,
+                //               width: 50,
+                //               color: Colors.white.withOpacity(0.6),
+                //             ),
+                //           ),
+                //     Row(
+                //       children: [
+                //         OftenText(text: '😊').medium(context),
+                //         Column(
+                //           children: [
+                //             ClipOval(
+                //               child: Image.asset(
+                //                 'assets/images/清水翔太.jpg',
+                //                 width: size.height * 0.1,
+                //                 height: size.height * 0.1,
+                //                 fit: BoxFit.fill,
+                //               ),
+                //             ),
+                //             OftenText(text: '清水翔太', smallFontSize: 20)
+                //                 .small(context)
+                //           ],
+                //         ),
+                //       ],
+                //     ),
+                //   ],
+                // ),
+                // Spacer(),
               ],
             )
           ],

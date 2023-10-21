@@ -27,9 +27,9 @@ class ViewModel {
    openCourseChoiceDart(){
    }
 
-  chosenTile(int index){
-     print('コース選択タイルを押しました。');
-   _soundLogicSub.audioPlay('assets/sounds/chosen.mp3');
+  chosenTile(int index)async{
+
+ _soundLogicSub.audioPlay('assets/sounds/chosen.mp3');
     ChosenData chosenData=ChosenData();
     chosenData.colorChange(index);
     _ref.read(chosenProvider.state).state = chosenData;
